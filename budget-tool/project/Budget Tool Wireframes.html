@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>Budget Tool Wireframes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Architects+Daughter&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper: #fafaf7;
+    --ink: #1f1f1c;
+    --ink-2: #3d3a33;
+    --ink-3: #6a655a;
+    --ink-4: #a49e90;
+    --line: #2b2a26;
+    --line-soft: #c9c4b5;
+    --line-softer: #e4e1d4;
+    --accent-warn: oklch(0.62 0.14 30);      /* muted orange-red */
+    --accent-good: oklch(0.68 0.09 145);     /* soft green */
+    --accent-cool: oklch(0.62 0.09 240);     /* muted blue */
+    --highlight: #fff4b8;
+  }
+  html, body { margin:0; padding:0; background: var(--paper); color: var(--ink); font-family: 'Architects Daughter', 'Caveat', sans-serif; }
+  body { overflow: hidden; }
+
+  /* Wireframe utilities */
+  .hand { font-family: 'Caveat', cursive; }
+  .ui   { font-family: 'Architects Daughter', cursive; }
+  .num  { font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums; }
+
+  /* Sketchy borders via double-offset box-shadow instead of SVG filters */
+  .sketch-box {
+    border: 1.5px solid var(--line);
+    box-shadow: 1px 1px 0 var(--line);
+    background: #fff;
+  }
+  .sketch-box-soft {
+    border: 1px solid var(--line-soft);
+    background: #fff;
+  }
+  .sketch-underline {
+    border-bottom: 1.5px solid var(--line);
+    padding-bottom: 2px;
+  }
+
+  /* Variance pills */
+  .pill { display:inline-flex; align-items:center; padding: 1px 6px; border-radius: 10px; font-size: 11px; font-family: 'JetBrains Mono', monospace; }
+  .pill-warn { background: color-mix(in oklch, var(--accent-warn) 18%, white); color: var(--accent-warn); border: 1px solid color-mix(in oklch, var(--accent-warn) 40%, white); }
+  .pill-good { background: color-mix(in oklch, var(--accent-good) 18%, white); color: var(--accent-good); border: 1px solid color-mix(in oklch, var(--accent-good) 40%, white); }
+  .pill-neutral { background: #f0ede3; color: var(--ink-3); border: 1px solid var(--line-softer); }
+
+  /* Cell states for grid-style wireframes (variance tint) */
+  .cell-over  { background: color-mix(in oklch, var(--accent-warn) 12%, white); }
+  .cell-under { background: color-mix(in oklch, var(--accent-good) 12%, white); }
+  .cell-lock  { background: repeating-linear-gradient(135deg, #fafaf7 0 4px, #efece1 4px 5px); }
+
+  /* Tiny scribbled arrow  — reused for growth indicators */
+  .scribble { stroke: var(--ink-2); stroke-width: 1.3; fill: none; stroke-linecap: round; stroke-linejoin: round; }
+
+  /* Post-it override for sticky annotations inside artboards */
+  .note {
+    position: absolute; background: #fff4b8; padding: 6px 9px; font-family: 'Caveat', cursive;
+    font-size: 14px; color:#5a4a2a; line-height:1.2;
+    box-shadow: 1px 1px 3px rgba(0,0,0,0.12); transform: rotate(-2deg);
+  }
+
+  /* Scrollbar hide for artboards */
+  .hide-scroll::-webkit-scrollbar { display: none; }
+  .hide-scroll { scrollbar-width: none; }
+
+  /* Basic buttons */
+  .btn {
+    display:inline-flex; align-items:center; gap:5px; padding:4px 10px;
+    border: 1.5px solid var(--line); background:#fff; font-family:'Architects Daughter', cursive; font-size: 13px;
+    box-shadow: 1px 1px 0 var(--line); cursor: default;
+  }
+  .btn-primary { background: var(--ink); color: var(--paper); }
+  .btn-ghost { border: 1.5px dashed var(--line-soft); box-shadow: none; color: var(--ink-3); background: transparent; }
+
+  /* Sparkline bars */
+  .spark { display:inline-flex; align-items:flex-end; gap:2px; height: 18px; }
+  .spark span { width: 3px; background: var(--ink-3); display:inline-block; }
+
+  /* Hatched placeholder (for images / empty states) */
+  .hatched {
+    background-image: repeating-linear-gradient(45deg, transparent 0 6px, rgba(0,0,0,0.07) 6px 7px);
+    border: 1px dashed var(--line-soft);
+  }
+</style>
+</head>
+<body>
+<div id="root"></div>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+
+<script type="text/babel" src="design-canvas.jsx"></script>
+<script type="text/babel" src="tweaks-panel.jsx"></script>
+<script type="text/babel" src="wireframe-data.jsx"></script>
+<script type="text/babel" src="wireframe-parts.jsx"></script>
+<script type="text/babel" src="wireframes.jsx"></script>
+
+<script type="text/babel">
+  const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+    "density": "regular",
+    "varianceColor": true,
+    "timeUnit": "monthly",
+    "showAnnotations": true
+  }/*EDITMODE-END*/;
+
+  function App() {
+    const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+    // Make tweaks readable by children via a context-lite global
+    window.__tweaks = t;
+    return (
+      <>
+        <DesignCanvas>
+          <DCSection id="app" title="Unified app · four views in one workspace" subtitle="Top-bar view switcher cycles between Grid / Vendor / Timeline / Variance. All share sidebar, scope, tweaks.">
+            <DCArtboard id="app-main" label="Ledgerly · unified" width={1360} height={820}>
+              <UnifiedApp t={t} />
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="v1" title="V1 · The Grid" subtitle="Pigment-style vendors × months, inline editing, frozen left rail">
+            <DCArtboard id="v1-main" label="Main canvas" width={1320} height={820}>
+              <V1Grid t={t} />
+            </DCArtboard>
+            <DCArtboard id="v1-editing" label="Inline edit · forecast method popover" width={1320} height={820}>
+              <V1Grid t={t} showPopover />
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="v2" title="V2 · Split View" subtitle="Vendor list left, month-detail right — drill-down first">
+            <DCArtboard id="v2-main" label="Vendor selected" width={1320} height={820}>
+              <V2Split t={t} />
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="v3" title="V3 · Forecast Canvas" subtitle="Timeline of vendor cards; scenario ribbon on top">
+            <DCArtboard id="v3-main" label="Timeline view" width={1320} height={820}>
+              <V3Canvas t={t} />
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="v4" title="V4 · Variance-First" subtitle="Dashboard of variance tiles, grid demoted to supporting role">
+            <DCArtboard id="v4-main" label="Dashboard" width={1320} height={820}>
+              <V4Variance t={t} />
+            </DCArtboard>
+          </DCSection>
+
+          <DCSection id="v5" title="V5 · Row Expand (alt direction)" subtitle="Kept separate — inline row-expand pattern as an alternative editing model">
+            <DCArtboard id="v5-main" label="Two rows expanded" width={1320} height={820}>
+              <V5RowExpand t={t} />
+            </DCArtboard>
+          </DCSection>
+        </DesignCanvas>
+
+        <TweaksPanel title="Tweaks">
+          <TweakSection label="Density" />
+          <TweakRadio label="Row density" value={t.density}
+            options={['compact','regular','comfy']}
+            onChange={(v) => setTweak('density', v)} />
+          <TweakSection label="Display" />
+          <TweakToggle label="Variance coloring" value={t.varianceColor}
+            onChange={(v) => setTweak('varianceColor', v)} />
+          <TweakToggle label="Sticky annotations" value={t.showAnnotations}
+            onChange={(v) => setTweak('showAnnotations', v)} />
+          <TweakRadio label="Time unit" value={t.timeUnit}
+            options={['monthly','quarterly']}
+            onChange={(v) => setTweak('timeUnit', v)} />
+        </TweaksPanel>
+      </>
+    );
+  }
+
+  ReactDOM.createRoot(document.getElementById('root')).render(<App/>);
+</script>
+</body>
+</html>
