@@ -5,6 +5,7 @@ import { type ModuleId } from '@/components/shell/Sidebar';
 import { useRevenue } from '@/lib/revenue/contexts';
 import { fmtMoneyScaled } from '@/lib/revenue/format';
 import DashboardView from './views/DashboardView';
+import SelfServeView from './views/SelfServeView';
 
 const VIEWS: ViewTab[] = [
   { id: 'dashboard',  label: 'Dashboard',  sub: 'overview',    icon: '◐' },
@@ -49,8 +50,9 @@ export default function RevenueModule({ module, onModuleChange, activeView, onVi
       views={VIEWS}
       meta={meta}
     >
-      {activeView === 'dashboard' && <DashboardView />}
-      {activeView !== 'dashboard' && <PlaceholderView name={VIEW_TITLES[activeView]} />}
+      {activeView === 'dashboard'  && <DashboardView />}
+      {activeView === 'self-serve' && <SelfServeView />}
+      {activeView !== 'dashboard' && activeView !== 'self-serve' && <PlaceholderView name={VIEW_TITLES[activeView]} />}
     </AppShell>
   );
 }
