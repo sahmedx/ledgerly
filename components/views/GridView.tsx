@@ -9,7 +9,7 @@ import { useTweaks } from '@/lib/contexts';
 type SortState = { col: 'name' | 'gl' | 'method'; dir: 'asc' | 'desc' } | null;
 
 export default function GridView() {
-  const { tweaks } = useTweaks();
+  const { tweaks, setTweaks } = useTweaks();
   const [searchQuery, setSearchQuery] = useState('');
   const [sort, setSort] = useState<SortState>(null);
 
@@ -46,7 +46,11 @@ export default function GridView() {
         right={
           <>
             <span style={{ fontSize: 12, color: 'var(--ink-3)' }}>View</span>
-            <div className="btn" style={{ fontSize: 12 }}>
+            <div
+              className="btn"
+              style={{ fontSize: 12 }}
+              onClick={() => setTweaks({ timeUnit: tweaks.timeUnit === 'quarterly' ? 'monthly' : 'quarterly' })}
+            >
               {tweaks.timeUnit === 'quarterly' ? 'Quarterly ▾' : 'Monthly ▾'}
             </div>
           </>

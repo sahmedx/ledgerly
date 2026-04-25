@@ -1,39 +1,34 @@
 'use client';
 
-import Sidebar from './Sidebar';
+import Sidebar, { type ModuleId } from './Sidebar';
 
-type ViewId = 'grid' | 'vendor' | 'timeline' | 'variance';
+export interface ViewTab {
+  id: string;
+  label: string;
+  sub: string;
+  icon: string;
+}
+
+export interface AppShellMeta {
+  breadcrumbSuffix: string;
+  title: string;
+  subtitle: string;
+  actions: React.ReactNode;
+}
 
 interface Props {
-  activeView: ViewId;
-  onViewChange: (view: ViewId) => void;
+  module: ModuleId;
+  onModuleChange: (m: ModuleId) => void;
+  activeView: string;
+  onViewChange: (v: string) => void;
+  views: ViewTab[];
+  meta: AppShellMeta;
   children: React.ReactNode;
 }
 
-const VIEWS: { id: ViewId; label: string; sub: string; icon: string }[] = [
-  { id: 'grid',     label: 'Grid',     sub: 'edit',      icon: '▦' },
-  { id: 'vendor',   label: 'Vendor',   sub: 'drill-in',  icon: '◧' },
-  { id: 'timeline', label: 'Timeline', sub: 'scenarios', icon: '⎯' },
-  { id: 'variance', label: 'Variance', sub: 'dashboard', icon: '◭' },
-];
-
-const VIEW_META: Record<ViewId, { title: string; subtitle: string; sidebarActive: string }> = {
-  grid:     { title: 'Vendor Opex · FY26 + FY27 H1', subtitle: '25 vendors · $1.42M annualized',              sidebarActive: 'Vendors' },
-  vendor:   { title: 'Vendors',                       subtitle: '$1.42M annualized · 25 active',               sidebarActive: 'Vendors' },
-  timeline: { title: 'Forecast Canvas',               subtitle: 'Drag cards between scenarios · $1.42M base',  sidebarActive: 'Scenarios' },
-  variance: { title: 'FY26 Variance',                 subtitle: "Apr '26 close · $11.4k over plan MTD",        sidebarActive: 'Overview' },
-};
-
-const VIEW_ACTIONS: Record<ViewId, React.ReactNode> = {
-  grid:     <><button className="btn">⤓ Export</button><button className="btn">⚙ Columns</button><button className="btn btn-primary">+ Vendor</button></>,
-  vendor:   <><button className="btn">⤓ Export</button><button className="btn btn-primary">+ Vendor</button></>,
-  timeline: <><button className="btn">+ Scenario</button><button className="btn btn-primary">Commit plan</button></>,
-  variance: <><button className="btn">⤓ Board pack</button><button className="btn btn-primary">Reforecast</button></>,
-};
-
-export default function AppShell({ activeView, onViewChange, children }: Props) {
-  const meta = VIEW_META[activeView];
-
+export default function AppShell({
+  module, onModuleChange, activeView, onViewChange, views, meta, children,
+}: Props) {
   return (
     <div style={{
       width: '100%',
@@ -52,7 +47,6 @@ export default function AppShell({ activeView, onViewChange, children }: Props) 
         background: '#fff',
         flexShrink: 0,
       }}>
-        {/* Logo + breadcrumb */}
         <div style={{ display: 'flex', alignItems: 'center', gap: 8 }}>
           <div style={{
             width: 22,
@@ -67,10 +61,9 @@ export default function AppShell({ activeView, onViewChange, children }: Props) 
           }}>$</div>
           <span className="hand" style={{ fontSize: 20, fontWeight: 700 }}>Ledgerly</span>
           <span style={{ color: 'var(--ink-4)', fontSize: 13 }}>/</span>
-          <span style={{ fontSize: 14, color: 'var(--ink-2)' }}>FY26 Plan · Opex</span>
+          <span style={{ fontSize: 14, color: 'var(--ink-2)' }}>{meta.breadcrumbSuffix}</span>
         </div>
 
-        {/* View switcher */}
         <div style={{
           marginLeft: 28,
           display: 'flex',
@@ -80,7 +73,7 @@ export default function AppShell({ activeView, onViewChange, children }: Props) 
           background: '#fcfbf7',
           boxShadow: '1px 1px 0 var(--line)',
         }}>
-          {VIEWS.map((v) => (
+          {views.map((v) => (
             <button
               key={v.id}
               onClick={() => onViewChange(v.id)}
@@ -110,7 +103,6 @@ export default function AppShell({ activeView, onViewChange, children }: Props) 
 
         <div style={{ flex: 1 }} />
 
-        {/* Right actions */}
         <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
           <div className="sketch-box" style={{ padding: '3px 10px', fontSize: 12, display: 'flex', alignItems: 'center', gap: 6 }}>
             <span style={{ width: 6, height: 6, borderRadius: 3, background: 'var(--accent-good)' }} />
@@ -145,12 +137,11 @@ export default function AppShell({ activeView, onViewChange, children }: Props) 
           <div style={{ fontSize: 13, color: 'var(--ink-3)', marginTop: 4 }}>{meta.subtitle}</div>
         </div>
         <div style={{ flex: 1 }} />
-        {VIEW_ACTIONS[activeView]}
+        {meta.actions}
       </div>
 
-      {/* Body: sidebar + content */}
       <div style={{ flex: 1, minHeight: 0, display: 'flex' }}>
-        <Sidebar active={meta.sidebarActive} />
+        <Sidebar activeModule={module} onModuleChange={onModuleChange} />
         <div style={{ flex: 1, minWidth: 0, overflow: 'auto' }}>
           {children}
         </div>

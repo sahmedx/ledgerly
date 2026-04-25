@@ -1,22 +1,25 @@
 'use client';
 
+export type ModuleId = 'expenses' | 'revenue';
+
 interface Props {
-  active?: string;
+  activeModule: ModuleId;
+  onModuleChange: (m: ModuleId) => void;
 }
 
-const NAV_ITEMS = [
-  { label: 'Overview',   icon: '◐' },
-  { label: 'Vendors',    icon: '▦' },
-  { label: 'Headcount',  icon: '◯' },
-  { label: 'Revenue',    icon: '◭' },
-  { label: 'Scenarios',  icon: '⌘' },
-  { label: 'Actuals',    icon: '⎚' },
-  { label: 'Reports',    icon: '⊟' },
+const MODULES: { id: ModuleId; label: string; icon: string }[] = [
+  { id: 'expenses', label: 'Expenses', icon: '▦' },
+  { id: 'revenue',  label: 'Revenue',  icon: '◭' },
 ];
 
-const QUICK_VIEWS = ['By category', 'By owner', 'Renewals ≤ 90d', 'Over budget'];
+const COMING_SOON = [
+  { label: 'Headcount',  icon: '◯' },
+  { label: 'P&L',        icon: '⊟' },
+  { label: 'Scenarios',  icon: '⌘' },
+  { label: 'Reports',    icon: '⎚' },
+];
 
-export default function Sidebar({ active = 'Vendors' }: Props) {
+export default function Sidebar({ activeModule, onModuleChange }: Props) {
   return (
     <div style={{
       width: 160,
@@ -36,30 +39,39 @@ export default function Sidebar({ active = 'Vendors' }: Props) {
         Plan FY26
       </div>
 
-      {NAV_ITEMS.map((item) => {
-        const isActive = item.label === active;
+      {MODULES.map((m) => {
+        const isActive = m.id === activeModule;
         return (
-          <div key={item.label} style={{
-            display: 'flex',
-            alignItems: 'center',
-            gap: 8,
-            padding: '6px 10px',
-            fontSize: 14,
-            color: isActive ? 'var(--ink)' : 'var(--ink-3)',
-            fontWeight: isActive ? 700 : 400,
-            background: isActive ? '#fff4b8' : 'transparent',
-            border: isActive ? '1.2px solid var(--line)' : '1.2px solid transparent',
-            marginBottom: 2,
-          }}>
+          <button
+            key={m.id}
+            onClick={() => onModuleChange(m.id)}
+            style={{
+              appearance: 'none',
+              cursor: 'pointer',
+              display: 'flex',
+              alignItems: 'center',
+              gap: 8,
+              padding: '6px 10px',
+              fontSize: 14,
+              color: isActive ? 'var(--ink)' : 'var(--ink-3)',
+              fontWeight: isActive ? 700 : 400,
+              background: isActive ? '#fff4b8' : 'transparent',
+              border: isActive ? '1.2px solid var(--line)' : '1.2px solid transparent',
+              marginBottom: 2,
+              fontFamily: 'var(--font-architects-daughter), cursive',
+              width: '100%',
+              textAlign: 'left',
+            }}
+          >
             <span style={{
               width: 14,
               textAlign: 'center',
               fontFamily: 'var(--font-jetbrains-mono), monospace',
             }}>
-              {item.icon}
+              {m.icon}
             </span>
-            <span>{item.label}</span>
-          </div>
+            <span>{m.label}</span>
+          </button>
         );
       })}
 
@@ -72,12 +84,27 @@ export default function Sidebar({ active = 'Vendors' }: Props) {
         color: 'var(--ink-4)',
         padding: '4px 10px 6px',
       }}>
-        Views
+        Coming soon
       </div>
 
-      {QUICK_VIEWS.map((v) => (
-        <div key={v} style={{ fontSize: 13, color: 'var(--ink-3)', padding: '4px 10px' }}>
-          — {v}
+      {COMING_SOON.map((v) => (
+        <div key={v.label} style={{
+          display: 'flex',
+          alignItems: 'center',
+          gap: 8,
+          padding: '5px 10px',
+          fontSize: 13,
+          color: 'var(--ink-4)',
+          opacity: 0.6,
+        }}>
+          <span style={{
+            width: 14,
+            textAlign: 'center',
+            fontFamily: 'var(--font-jetbrains-mono), monospace',
+          }}>
+            {v.icon}
+          </span>
+          <span>{v.label}</span>
         </div>
       ))}
     </div>

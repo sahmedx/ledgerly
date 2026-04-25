@@ -1,0 +1,253 @@
+/* Revenue module types — input assumptions + output results.
+ * Mirrors notion_forecast_spec.md §4. */
+
+export type ScenarioId = 'base' | 'upside' | 'downside';
+
+export type SalesLedSegmentId = 'business_large' | 'enterprise';
+export type SelfServeTierId = 'plus' | 'business_small';
+
+export interface PipelineDeal {
+  id: string;
+  company: string;
+  stage: 'qualified' | 'discovery' | 'proposal' | 'commit';
+  acv: number;
+  expected_close_month: number; // 1..6
+  segment: SalesLedSegmentId;
+}
+
+export interface RetentionParams {
+  floor: number;
+  decay: number;
+}
+
+export interface HiringPlanEntry {
+  month: number;
+  count: number;
+}
+
+export interface Assumptions {
+  starting_state: {
+    self_serve_arr: { plus: number; business_small: number };
+    sales_led_arr: { business_large: number; enterprise: number };
+    workspaces: { plus: number; business_small: number };
+    logos: { business_large: number; enterprise: number };
+    free_users: number;
+    total_headcount: number;
+    quota_reps: number;
+    rd_headcount: number;
+    ga_headcount: number;
+    cs_headcount: number;
+    marketing_headcount: number;
+  };
+  self_serve: {
+    free_pool_monthly_growth: number;
+    free_to_paid_rate: number;
+    tier_mix_on_conversion: { plus: number; business_small: number };
+    initial_seats_per_workspace: { plus: number; business_small: number };
+    legacy_seats_per_workspace: { plus: number; business_small: number };
+    monthly_seat_growth_rate: { plus: number; business_small: number };
+    plus_to_business_upgrade_rate: number;
+    retention: {
+      plus: RetentionParams;
+      business_small: RetentionParams;
+      legacy_plus: RetentionParams;
+      legacy_business_small: RetentionParams;
+    };
+    pricing: {
+      plus: { annual: number; monthly: number };
+      business_small: { annual: number; monthly: number };
+    };
+    annual_billing_mix: { plus: number; business_small: number };
+    /** Annual-billing fraction applied to the Day-0 legacy cohort specifically.
+     *  Spec §5 starting ARR is computed at annual pricing; default = 1.0 for both tiers. */
+    legacy_annual_fraction: { plus: number; business_small: number };
+    graduation_seat_threshold: number;
+  };
+  sales_led: {
+    avg_seats_per_logo: { business_large: number; enterprise: number };
+    blended_seat_price: { business_large: number; enterprise: number };
+    enterprise_avg_acv: number;
+    named_pipeline: PipelineDeal[];
+    stage_probability: {
+      qualified: number;
+      discovery: number;
+      proposal: number;
+      commit: number;
+    };
+    pipeline_capacity_seam_month: number;
+    capacity_segment_split: { business_large: number; enterprise: number };
+    sales_capacity: {
+      hiring_plan: HiringPlanEntry[];
+      ramp_curve: number[];
+      fully_ramped_quota_annual: number;
+      attainment: number;
+      monthly_attrition_rate: number;
+      replacement_lag_months: number;
+    };
+    win_rate: number;
+    existing_customer_dynamics: {
+      business_large: { gross_churn: number; contraction: number; expansion: number };
+      enterprise:     { gross_churn: number; contraction: number; expansion: number };
+    };
+    /** Distribution of Day-0 anniversary months. Sum = 1.0. Index 0 = Jan 26 anniversary, etc. */
+    legacy_anniversary_distribution: number[];
+  };
+  costs: {
+    sm: {
+      sdr_ratio: number;
+      se_ratio: number;
+      reps_per_manager: number;
+      flc: { rep: number; sdr: number; se: number; manager: number; mktg: number };
+      marketing_programs_pct_of_revenue: number;
+      marketing_hiring_plan: HiringPlanEntry[];
+    };
+    rd: {
+      hiring_plan: HiringPlanEntry[];
+      flc_per_eng: number;
+      tooling_pct_of_revenue: number;
+    };
+    ga: {
+      hiring_plan: HiringPlanEntry[];
+      flc_per_ga: number;
+      te_pct_of_revenue: number;
+    };
+    cs: {
+      csm_per_enterprise_logos: number;
+      csm_per_business_large_logos: number;
+      flc_per_csm: number;
+      cs_in_cogs_pct: number;
+    };
+    cogs: {
+      hosting_pct_of_revenue: number;
+      payment_processing_pct_self_serve: number;
+      payment_processing_pct_sales_led: number;
+      ai_inference_pct_of_business_enterprise_arr: number;
+    };
+  };
+  scenarios: {
+    base: ScenarioShocks;
+    upside: ScenarioShocks;
+    downside: ScenarioShocks;
+  };
+  ipo_multiples: { low: number; mid: number; high: number };
+}
+
+/** Shock multipliers applied multiplicatively (compound) to base assumptions. */
+export interface ScenarioShocks {
+  free_pool_growth: number;
+  free_to_paid_rate: number;
+  plus_to_business_upgrade_rate: number;
+  attainment: number;
+  win_rate: number;
+  self_serve_churn: number;
+  sales_led_churn: number;
+  expansion_rate: number;
+}
+
+export interface MonthlySelfServe {
+  free_users: number;
+  new_paid_workspaces: number;
+  active_workspaces: { plus: number; business_small: number };
+  active_seats: { plus: number; business_small: number };
+  mrr: { plus: number; business_small: number };
+  arr: { plus: number; business_small: number };
+  plus_to_business_upgrades: number;
+  graduations_to_sales_led: number;
+  graduated_arr: number;
+}
+
+export interface MonthlySalesLed {
+  active_logos: { business_large: number; enterprise: number };
+  new_arr_named_pipeline: number;
+  new_arr_capacity: number;
+  new_arr_graduation: number;
+  expansion_arr: number;
+  contraction_arr: number;
+  churn_arr: number;
+  ending_arr: { business_large: number; enterprise: number };
+  active_reps: number;
+  productive_capacity_arr: number;
+}
+
+export interface MonthlyTotal {
+  arr: number;
+  mrr: number;
+  revenue: number;
+  billings: number;
+  deferred_revenue_balance: number;
+  ai_influenced_arr: number;
+  ai_influenced_pct: number;
+}
+
+export interface MonthlyCosts {
+  cogs: number;
+  gross_profit: number;
+  gross_margin_pct: number;
+  sm_total: number;
+  rd_total: number;
+  ga_total: number;
+  cs_total: number;
+  opex_total: number;
+  operating_income: number;
+  operating_margin_pct: number;
+}
+
+export interface MonthlyHeadcount {
+  sales_reps: number;
+  sdrs: number;
+  ses: number;
+  sales_mgrs: number;
+  marketing: number;
+  rd: number;
+  ga: number;
+  cs: number;
+  total: number;
+}
+
+export interface MonthlyKpis {
+  nrr_ttm: number;
+  grr_ttm: number;
+  magic_number: number;
+  burn_multiple: number;
+  rule_of_40: number;
+  cac_payback_self_serve: number;
+  cac_payback_sales_led: number;
+  ltv_cac_self_serve: number;
+  ltv_cac_sales_led: number;
+  arpa_self_serve: number;
+  arpa_sales_led: number;
+  arpa_blended: number;
+  total_logos: number;
+}
+
+export interface MonthlyResult {
+  month_index: number;       // 1..18
+  calendar_label: string;    // 'Jan 26'..'Jun 27'
+  is_actual: boolean;        // months 1..3 = actual, 4..18 = forecast
+  self_serve: MonthlySelfServe;
+  sales_led: MonthlySalesLed;
+  total: MonthlyTotal;
+  costs: MonthlyCosts;
+  headcount: MonthlyHeadcount;
+  kpis: MonthlyKpis;
+}
+
+export interface ResolvedDeal extends PipelineDeal {
+  weighted_arr: number;
+  recognized_in_month: number | null; // null if past seam
+}
+
+export interface ValidationResult {
+  id: string;
+  label: string;
+  passed: boolean;
+  detail: string;
+}
+
+export interface Results {
+  monthly: MonthlyResult[];
+  pipeline_resolved: ResolvedDeal[];
+  validations: ValidationResult[];
+  starting_arr: number;
+  ending_arr: number;
+}
