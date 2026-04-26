@@ -10,7 +10,8 @@ const padL = 56, padR = 16, padT = 14, padB = 32;
 export default function NewArrBySource() {
   const { results, activeScenario, assumptions } = useRevenue();
   const monthly = results[activeScenario].monthly;
-  const seam = assumptions.sales_led.pipeline_capacity_seam_month;
+  const taperStart = assumptions.sales_led.pipeline_taper_start_month;
+  const taperEnd = assumptions.sales_led.pipeline_taper_end_month;
 
   const named  = monthly.map(m => m.sales_led.new_arr_named_pipeline);
   const cap    = monthly.map(m => m.sales_led.new_arr_capacity);
@@ -27,7 +28,8 @@ export default function NewArrBySource() {
   const y = (v: number) => padT + innerH - (v / maxV) * innerH;
   const h = (v: number) => (v / maxV) * innerH;
 
-  const seamX = padL + (seam - 1) * colW;
+  const taperStartX = padL + (taperStart - 1) * colW;
+  const taperEndX = padL + (taperEnd - 1) * colW;
 
   const sumNamed  = named.reduce((a, b) => a + b, 0);
   const sumCap    = cap.reduce((a, b) => a + b, 0);
@@ -40,7 +42,7 @@ export default function NewArrBySource() {
         <div>
           <div className="hand" style={{ fontSize: 18 }}>New sales-led ARR · by source</div>
           <div style={{ fontSize: 11, color: 'var(--ink-3)' }}>
-            Named pipeline (m1–6) · capacity (m7+) · graduation (all)
+            Named pipeline (tapers m{taperStart}–m{taperEnd}) · capacity (ramps in over taper) · graduation (all)
           </div>
         </div>
         <div style={{ display: 'flex', gap: 12, fontSize: 11, color: 'var(--ink-3)' }}>
@@ -65,10 +67,23 @@ export default function NewArrBySource() {
           );
         })}
 
-        {/* Seam line */}
+        {/* Pipeline taper band */}
+        <rect
+          x={taperStartX}
+          y={padT}
+          width={Math.max(0, taperEndX - taperStartX)}
+          height={innerH}
+          fill="var(--accent-warn)"
+          opacity={0.06}
+        />
         <line
-          x1={seamX} y1={padT}
-          x2={seamX} y2={padT + innerH}
+          x1={taperStartX} y1={padT}
+          x2={taperStartX} y2={padT + innerH}
+          stroke="var(--ink-3)" strokeWidth={1} strokeDasharray="4 3"
+        />
+        <line
+          x1={taperEndX} y1={padT}
+          x2={taperEndX} y2={padT + innerH}
           stroke="var(--ink-3)" strokeWidth={1} strokeDasharray="4 3"
         />
 

@@ -21,25 +21,27 @@ export default function WeightedBookingsBar() {
   const sl = assumptions.sales_led;
   const r = results[activeScenario];
 
-  // Aggregate weighted ACV per month from raw pipeline, split by segment
-  const buckets: MonthBucket[] = Array.from({ length: 6 }, (_, i) => ({
-    month: i + 1,
-    total: 0,
-    business_large: 0,
-    enterprise: 0,
-    count: 0,
-  }));
-  for (const d of sl.named_pipeline) {
-    if (d.expected_close_month < 1 || d.expected_close_month > 6) continue;
-    const w = d.acv * sl.stage_probability[d.stage];
-    const b = buckets[d.expected_close_month - 1];
-    b.total += w;
-    b.count += 1;
-    if (d.segment === 'business_large') b.business_large += w;
-    else b.enterprise += w;
-  }
+  // V2: engine consumes the scalar `named_pipeline_weighted_acv` and splits by
+  // capacity_segment_split. Bars below visualize the engine-recognised path.
+  const split = sl.capacity_segment_split;
+  const buckets: MonthBucket[] = r.monthly.slice(0, 6).map((m, i) => {
+    const total = m.sales_led.new_arr_named_pipeline;
+    const dealCount = sl.named_pipeline.filter(d => d.expected_close_month === i + 1).length;
+    return {
+      month: i + 1,
+      total,
+      business_large: total * split.business_large,
+      enterprise: total * split.enterprise,
+      count: dealCount,
+    };
+  });
 
-  // Engine-recognised new_arr_named_pipeline per month for tie-out
+  // Deal-list weighted aggregate (illustrative) for the side-by-side caveat.
+  const dealListWeighted = sl.named_pipeline.reduce((s, d) => {
+    if (d.expected_close_month < 1 || d.expected_close_month > 6) return s;
+    return s + d.acv * sl.stage_probability[d.stage];
+  }, 0);
+
   const enginePerMonth = r.monthly.slice(0, 6).map(m => m.sales_led.new_arr_named_pipeline);
 
   const maxV = Math.max(1, ...buckets.map(b => b.total)) * 1.1;
@@ -51,15 +53,13 @@ export default function WeightedBookingsBar() {
   const y = (v: number) => padT + innerH - (v / maxV) * innerH;
   const h = (v: number) => (v / maxV) * innerH;
 
-  const total = buckets.reduce((s, b) => s + b.total, 0);
-
   return (
     <div className="sketch-box" style={{ padding: '14px 18px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
         <div>
           <div className="hand" style={{ fontSize: 18 }}>Weighted bookings · pipeline close</div>
           <div style={{ fontSize: 11, color: 'var(--ink-3)' }}>
-            ACV × stage probability, by expected close month
+            Engine-recognised new ARR by month · scalar `named_pipeline_weighted_acv` × capacity split
           </div>
         </div>
         <div style={{ display: 'flex', gap: 12, fontSize: 11, color: 'var(--ink-3)' }}>
@@ -137,8 +137,8 @@ export default function WeightedBookingsBar() {
       </svg>
 
       <div style={{ fontSize: 10, color: 'var(--ink-4)', marginTop: 4, display: 'flex', justifyContent: 'space-between' }}>
-        <span>Total weighted: {fmtMoneyScaled(total)}</span>
-        <span>Engine-recognised new ARR (m1–6): {fmtMoneyScaled(enginePerMonth.reduce((a, b) => a + b, 0))}</span>
+        <span>Engine total m1–6: {fmtMoneyScaled(enginePerMonth.reduce((a, b) => a + b, 0))}</span>
+        <span>Deal-list aggregate (illustrative): {fmtMoneyScaled(dealListWeighted)}</span>
       </div>
     </div>
   );

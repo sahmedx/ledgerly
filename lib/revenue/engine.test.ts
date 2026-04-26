@@ -10,8 +10,8 @@ function clone(A: Assumptions): Assumptions {
 }
 
 const TOTAL_DAY0_ARR = 600_000_000;          // $600M target per spec §5
-const DAY0_SS_ARR = 360_000_000;             // $360M
-const DAY0_SL_ARR = 240_000_000;             // $240M
+const DAY0_SS_ARR = 310_000_000;             // V2: $310M (Plus $170M + Biz-small $140M)
+const DAY0_SL_ARR = 290_000_000;             // V2: $290M (BL $115M + ENT $175M)
 
 describe('engine — month 1 self-serve conversion', () => {
   it('computes new paid workspaces from free pool × conversion rate', () => {
@@ -28,56 +28,72 @@ describe('engine — month 1 self-serve conversion', () => {
     // so the ratio assertion focuses on new conversions feeding new cohorts. Validated
     // via plus_to_business_upgrades downstream (zero in month 1 since legacy cohort
     // is already accounted for).
-    expect(m1.self_serve.active_workspaces.plus).toBeGreaterThan(400_000); // ~417k legacy
-    expect(m1.self_serve.active_workspaces.business_small).toBeGreaterThan(50_000); // ~55k legacy
+    expect(m1.self_serve.active_workspaces.plus).toBeGreaterThan(340_000); // ~354k legacy
+    expect(m1.self_serve.active_workspaces.business_small).toBeGreaterThan(45_000); // ~48.6k legacy
   });
 
   it('starts at ~$600M total ARR (within 1% of spec §5)', () => {
     const r = simulate(DEFAULT_ASSUMPTIONS, 'base');
     const m1 = r.monthly[0];
-    // Slightly above $600M because new conversions add to ARR in month 1
+    // V2: month 1 picks up new SS conversions plus the pre-seam scalar pipeline ($26.7M),
+    // so end-of-month ARR runs ~8-10% above starting state.
     expect(m1.total.arr).toBeGreaterThan(0.98 * TOTAL_DAY0_ARR);
-    expect(m1.total.arr).toBeLessThan(1.05 * TOTAL_DAY0_ARR);
+    expect(m1.total.arr).toBeLessThan(1.12 * TOTAL_DAY0_ARR);
   });
 });
 
 describe('engine — month 1 sales-led pipeline', () => {
-  it('closes weighted ACV from named pipeline before seam month', () => {
+  it('runs named pipeline at full weight before the taper start; capacity weight = 0 there', () => {
     const r = simulate(DEFAULT_ASSUMPTIONS, 'base');
     const m1 = r.monthly[0];
 
-    // Default pipeline has 2 deals closing m1: Northwind (commit, $480k×0.80) + Acme (proposal, $320k×0.50)
-    // Weighted = 384k + 160k = $544k
-    expect(m1.sales_led.new_arr_named_pipeline).toBeCloseTo(544_000, -3);
-    expect(m1.sales_led.new_arr_capacity).toBe(0); // before seam
+    // taper window m4..m9 with default weights [1,1,1,1,0.8,0.6,0.4,0.2,0] sums to 6.0,
+    // so pipeline-at-full = $40M / 6 = ~$6.67M and m1 carries weight 1.0.
+    expect(m1.sales_led.new_arr_named_pipeline).toBeCloseTo(40_000_000 / 6, -3);
+    // Capacity is gated by (1 - pipelineWeight); pre-taper that is zero.
+    expect(m1.sales_led.new_arr_capacity).toBe(0);
   });
 
   it('applies existing-base churn/expansion in month 1 (decision #8: not on new ARR)', () => {
     const r = simulate(DEFAULT_ASSUMPTIONS, 'base');
     const m1 = r.monthly[0];
-    // Day-0 BL ARR $100M × 0.5% = $500k churn
-    // Day-0 ENT ARR $140M × 0.2% = $280k churn
-    // Total churn = $780k (computed on BoM, NOT including m1's new ARR)
-    expect(m1.sales_led.churn_arr).toBeCloseTo(780_000, -3);
+    // V2: Day-0 BL ARR $115M × 0.5% = $575k churn
+    //     Day-0 ENT ARR $175M × 0.2% = $350k churn
+    // Total churn = $925k (computed on BoM, NOT including m1's new ARR)
+    expect(m1.sales_led.churn_arr).toBeCloseTo(925_000, -3);
   });
 });
 
-describe('engine — month 7 capacity seam', () => {
-  it('switches from named pipeline to capacity-driven new ARR', () => {
+describe('engine — pipeline-to-capacity taper', () => {
+  it('blends both sources inside the taper window (m7 has both > 0)', () => {
     const r = simulate(DEFAULT_ASSUMPTIONS, 'base');
     const m7 = r.monthly[6];
-    expect(m7.sales_led.new_arr_named_pipeline).toBe(0);
+    // m7 weight = 1 - (7-4)/(9-4) = 0.4; capacity weight = 0.6.
+    expect(m7.sales_led.new_arr_named_pipeline).toBeGreaterThan(0);
     expect(m7.sales_led.new_arr_capacity).toBeGreaterThan(0);
+  });
+
+  it('cumulative named pipeline across the horizon equals the scalar input', () => {
+    const r = simulate(DEFAULT_ASSUMPTIONS, 'base');
+    const totalNamed = r.monthly.reduce((s, m) => s + m.sales_led.new_arr_named_pipeline, 0);
+    expect(totalNamed).toBeCloseTo(DEFAULT_ASSUMPTIONS.sales_led.named_pipeline_weighted_acv, -3);
+  });
+
+  it('after the taper end, named pipeline = 0 and capacity carries 100%', () => {
+    const r = simulate(DEFAULT_ASSUMPTIONS, 'base');
+    const m12 = r.monthly[11];
+    expect(m12.sales_led.new_arr_named_pipeline).toBe(0);
+    expect(m12.sales_led.new_arr_capacity).toBeGreaterThan(0);
   });
 });
 
 describe('engine — month 10 sales-led billings spike (decision #7)', () => {
   it('shows large legacy-anniversary billings in Oct 26', () => {
     const r = simulate(DEFAULT_ASSUMPTIONS, 'base');
-    // Day-0 sales-led ARR = $240M; 70% renews in Oct (month 10) per legacy_anniversary_distribution
-    // Expect ~$168M legacy bolus this month plus other billings
+    // V2: Day-0 sales-led ARR = $290M; 70% renews in Oct (month 10) per legacy_anniversary_distribution
+    // Expect ~$203M legacy bolus this month plus other billings
     const m10 = r.monthly[9];
-    expect(m10.total.billings).toBeGreaterThan(150_000_000);
+    expect(m10.total.billings).toBeGreaterThan(180_000_000);
     void DAY0_SL_ARR; // referenced for documentation
   });
 });
@@ -201,7 +217,7 @@ describe('engine — validation checks pass on defaults', () => {
     expect(hardFailed).toEqual([]);
   });
 
-  it('day-0 sanity: $360M self-serve, $240M sales-led ≈ $600M', () => {
+  it('day-0 sanity: $310M self-serve, $290M sales-led ≈ $600M (V2)', () => {
     void DAY0_SS_ARR;
     expect(TOTAL_DAY0_ARR).toBe(600_000_000);
   });

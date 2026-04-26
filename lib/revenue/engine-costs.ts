@@ -19,6 +19,7 @@ export interface CostsInput {
   total_revenue: number;
   self_serve_revenue: number;
   sales_led_revenue: number;
+  plus_arr: number;
   business_small_arr: number;
   business_large_arr: number;
   enterprise_arr: number;
@@ -94,10 +95,10 @@ export function computeCosts(t: number, A: Assumptions, input: CostsInput): {
   const hosting = input.total_revenue * c.cogs.hosting_pct_of_revenue;
   const payment_processing_self_serve = input.self_serve_revenue * c.cogs.payment_processing_pct_self_serve;
   const payment_processing_sales_led = input.sales_led_revenue * c.cogs.payment_processing_pct_sales_led;
-  // AI inference split by segment (direct attribution per spec §4):
-  // business_small → self-serve; business_large + enterprise → sales-led
-  const ai_pct = c.cogs.ai_inference_pct_of_business_enterprise_arr;
-  const ai_inference_self_serve = (input.business_small_arr / 12) * ai_pct;
+  // AI inference applies to total paid ARR (V2 calibration). Split by segment:
+  // plus + business_small → self-serve; business_large + enterprise → sales-led.
+  const ai_pct = c.cogs.ai_inference_pct_of_paid_arr;
+  const ai_inference_self_serve = ((input.plus_arr + input.business_small_arr) / 12) * ai_pct;
   const ai_inference_sales_led = ((input.business_large_arr + input.enterprise_arr) / 12) * ai_pct;
   const cogs_total =
       hosting

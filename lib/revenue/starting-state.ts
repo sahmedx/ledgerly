@@ -1,16 +1,16 @@
-/* Day-0 (Dec 2025) snapshot per spec §5. */
+/* Day-0 (Dec 2025) snapshot — V2 calibration. */
 
 export const STARTING_STATE = {
-  self_serve_arr: { plus: 200_000_000, business_small: 160_000_000 },
-  sales_led_arr:  { business_large: 100_000_000, enterprise: 140_000_000 },
-  workspaces:     { plus: 417_000, business_small: 55_000 },
-  logos:          { business_large: 4_200, enterprise: 933 },
+  self_serve_arr: { plus: 170_000_000, business_small: 140_000_000 },
+  sales_led_arr:  { business_large: 115_000_000, enterprise: 175_000_000 },
+  workspaces:     { plus: 354_000, business_small: 48_600 },
+  logos:          { business_large: 4_800, enterprise: 1_167 },
   free_users:     90_000_000,
-  total_headcount: 800,
-  quota_reps:      50,
+  total_headcount: 920,
+  quota_reps:      100,
   rd_headcount:    420,
   ga_headcount:    90,
-  cs_headcount:    50,
+  cs_headcount:    95,
   marketing_headcount: 90,
 } as const;
 

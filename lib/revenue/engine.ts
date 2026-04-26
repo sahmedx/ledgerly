@@ -51,6 +51,7 @@ export function simulate(assumptionsRaw: Assumptions, scenario: ScenarioId = 'ba
       total_revenue: billings.total_revenue,
       self_serve_revenue: ss_revenue,
       sales_led_revenue: billings.sl_revenue,
+      plus_arr: ss.arr.plus,
       business_small_arr: ss.arr.business_small,
       business_large_arr: sl.ending_arr.business_large,
       enterprise_arr: sl.ending_arr.enterprise,
@@ -92,7 +93,7 @@ export function simulate(assumptionsRaw: Assumptions, scenario: ScenarioId = 'ba
   // Pipeline resolution (for the Sales-Led view in 5c, but compute it here for completeness)
   const pipeline_resolved: ResolvedDeal[] = A.sales_led.named_pipeline.map(deal => {
     const prob = A.sales_led.stage_probability[deal.stage];
-    const recognized = deal.expected_close_month < A.sales_led.pipeline_capacity_seam_month
+    const recognized = deal.expected_close_month <= A.sales_led.pipeline_taper_end_month
       ? deal.expected_close_month
       : null;
     return {

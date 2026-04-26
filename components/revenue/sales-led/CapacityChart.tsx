@@ -10,17 +10,21 @@ const padL = 56, padR = 56, padT = 16, padB = 32;
 export default function CapacityChart() {
   const { results, activeScenario, assumptions } = useRevenue();
   const monthly = results[activeScenario].monthly;
-  const seam = assumptions.sales_led.pipeline_capacity_seam_month;
+  const taperStart = assumptions.sales_led.pipeline_taper_start_month;
+  const taperEnd = assumptions.sales_led.pipeline_taper_end_month;
 
   const reps = monthly.map(m => m.sales_led.active_reps);
   const cap = monthly.map(m => m.sales_led.productive_capacity_arr);
-  // new_arr_capacity is per-month new ARR added; annualize to match productive_capacity_arr scale
-  const newCapArr = monthly.map(m => m.sales_led.new_arr_capacity * 12);
+  // Total new ARR (named + capacity + graduation) annualised, so the line stays
+  // continuous across the pipeline-to-capacity taper.
+  const newArr = monthly.map(m =>
+    (m.sales_led.new_arr_named_pipeline + m.sales_led.new_arr_capacity + m.sales_led.new_arr_graduation) * 12,
+  );
 
   const innerW = W - padL - padR;
   const innerH = H - padT - padB;
 
-  const maxArr  = Math.max(1, ...cap, ...newCapArr) * 1.1;
+  const maxArr  = Math.max(1, ...cap, ...newArr) * 1.1;
   const maxReps = Math.max(1, ...reps) * 1.15;
 
   const x = (i: number) => padL + (i / (monthly.length - 1)) * innerW;
@@ -30,7 +34,8 @@ export default function CapacityChart() {
   const path = (arr: number[], y: (v: number) => number) =>
     arr.map((v, i) => `${i === 0 ? 'M' : 'L'} ${x(i)} ${y(v)}`).join(' ');
 
-  const seamX = x(seam - 1);
+  const taperStartX = x(Math.max(0, taperStart - 1));
+  const taperEndX = x(Math.max(0, taperEnd - 1));
 
   return (
     <div className="sketch-box" style={{ padding: '14px 18px' }}>
@@ -38,7 +43,7 @@ export default function CapacityChart() {
         <div>
           <div className="hand" style={{ fontSize: 18 }}>Sales capacity build</div>
           <div style={{ fontSize: 11, color: 'var(--ink-3)' }}>
-            Reps · productive capacity ($ ARR/yr) · capacity-driven new ARR (annualised)
+            Reps · productive capacity ($ ARR/yr) · total new ARR annualised (named + capacity + grad)
           </div>
         </div>
         <div style={{ display: 'flex', gap: 12, fontSize: 11, color: 'var(--ink-3)' }}>
@@ -74,22 +79,35 @@ export default function CapacityChart() {
           );
         })}
 
-        {/* Seam line at month 7 */}
+        {/* Pipeline taper band: pipeline weight 1.0 → 0.0 across [taperStart, taperEnd] */}
+        <rect
+          x={taperStartX}
+          y={padT}
+          width={Math.max(0, taperEndX - taperStartX)}
+          height={innerH}
+          fill="var(--accent-warn)"
+          opacity={0.06}
+        />
         <line
-          x1={seamX} y1={padT}
-          x2={seamX} y2={padT + innerH}
+          x1={taperStartX} y1={padT}
+          x2={taperStartX} y2={padT + innerH}
+          stroke="var(--ink-3)" strokeWidth={1} strokeDasharray="4 3"
+        />
+        <line
+          x1={taperEndX} y1={padT}
+          x2={taperEndX} y2={padT + innerH}
           stroke="var(--ink-3)" strokeWidth={1} strokeDasharray="4 3"
         />
         <text
-          x={seamX + 4} y={padT + 11}
+          x={(taperStartX + taperEndX) / 2} y={padT + 11} textAnchor="middle"
           style={{ fontFamily: 'var(--font-architects-daughter), cursive', fontSize: 10, fill: 'var(--ink-3)' }}
         >
-          ← named pipeline · capacity →
+          pipeline → capacity taper
         </text>
 
         {/* Lines */}
         <path d={path(cap, yArr)} fill="none" stroke="var(--accent-cool)" strokeWidth={1.5} />
-        <path d={path(newCapArr, yArr)} fill="none" stroke="var(--accent-good)" strokeWidth={1.5} />
+        <path d={path(newArr, yArr)} fill="none" stroke="var(--accent-good)" strokeWidth={1.5} />
         <path d={path(reps, yReps)} fill="none" stroke="var(--ink-3)" strokeWidth={1.2} strokeDasharray="3 2" />
 
         {/* Endpoint annotations */}
@@ -111,7 +129,7 @@ export default function CapacityChart() {
 
       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: 'var(--ink-4)', marginTop: 4 }}>
         <span>Active reps end of period: {fmtCount(reps[reps.length - 1])}</span>
-        <span>Capacity {fmtMoneyScaled(cap[cap.length - 1])} · New (m24) {fmtMoneyScaled(newCapArr[newCapArr.length - 1])}</span>
+        <span>Capacity {fmtMoneyScaled(cap[cap.length - 1])} · New (m24) {fmtMoneyScaled(newArr[newArr.length - 1])}</span>
       </div>
     </div>
   );

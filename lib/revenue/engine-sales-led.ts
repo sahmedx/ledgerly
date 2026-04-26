@@ -35,6 +35,22 @@ function rampFactor(months_since_hire: number, ramp_curve: number[]): number {
   return ramp_curve[months_since_hire];
 }
 
+/** Linear taper of named-pipeline contribution. 1.0 before start, 0.0 after end. */
+export function pipelineWeight(t: number, start: number, end: number): number {
+  if (t < start) return 1.0;
+  if (t >= end) return 0.0;
+  if (end <= start) return 0.0;
+  return 1.0 - (t - start) / (end - start);
+}
+
+/** Discrete sum of pipelineWeight(t, start, end) for t = 1..end. Used to normalize
+ *  the scalar `named_pipeline_weighted_acv` across the weighted-months window. */
+export function sumPipelineWeight(start: number, end: number): number {
+  let s = 0;
+  for (let t = 1; t <= end; t++) s += pipelineWeight(t, start, end);
+  return s;
+}
+
 export function applySalesLedShocks(A: Assumptions, shocks: ScenarioShocks): Assumptions['sales_led'] {
   const sl = A.sales_led;
   const dyn = sl.existing_customer_dynamics;
@@ -129,30 +145,32 @@ export function stepSalesLed(
   }
   const productive_capacity_arr = productive_capacity_monthly * 12;
 
-  // Step C: new ARR sources with seam rule
-  let new_arr_named = 0;
-  let new_arr_named_bl = 0;
-  let new_arr_named_ent = 0;
-  if (t < sl.pipeline_capacity_seam_month) {
-    for (const deal of sl.named_pipeline) {
-      if (deal.expected_close_month === t) {
-        const prob = sl.stage_probability[deal.stage];
-        const weighted = deal.acv * prob;
-        new_arr_named += weighted;
-        if (deal.segment === 'business_large') new_arr_named_bl += weighted;
-        else new_arr_named_ent += weighted;
-      }
-    }
-  }
+  // Step C: blended new-ARR sources via pipeline taper.
+  // pipelineWeight ∈ [0, 1] runs 1.0 → 0.0 across [taper_start, taper_end].
+  // capacityWeight = 1 - pipelineWeight, so the two sources sum to one productive
+  // unit at every point — no double-count, no cliff at a hard seam.
+  const pw = pipelineWeight(t, sl.pipeline_taper_start_month, sl.pipeline_taper_end_month);
+  const cw = 1.0 - pw;
 
-  let new_arr_capacity = 0;
-  let new_arr_capacity_bl = 0;
-  let new_arr_capacity_ent = 0;
-  if (t >= sl.pipeline_capacity_seam_month) {
-    new_arr_capacity = productive_capacity_monthly * sl.win_rate;
-    new_arr_capacity_bl  = new_arr_capacity * sl.capacity_segment_split.business_large;
-    new_arr_capacity_ent = new_arr_capacity * sl.capacity_segment_split.enterprise;
-  }
+  // Distribute scalar pipeline ACV across the weighted months so the cumulative
+  // contribution equals `named_pipeline_weighted_acv` regardless of taper width.
+  const total_pipeline_weight = sumPipelineWeight(
+    sl.pipeline_taper_start_month,
+    sl.pipeline_taper_end_month,
+  );
+  const pipeline_at_full = total_pipeline_weight > 0
+    ? sl.named_pipeline_weighted_acv / total_pipeline_weight
+    : 0;
+
+  const new_arr_named = pipeline_at_full * pw;
+  const new_arr_named_bl  = new_arr_named * sl.capacity_segment_split.business_large;
+  const new_arr_named_ent = new_arr_named * sl.capacity_segment_split.enterprise;
+
+  // Capacity is already quota × attainment = closed ARR. Multiplying by win_rate
+  // here would double-discount; win_rate stays a UI concept for the deal table.
+  const new_arr_capacity = productive_capacity_monthly * cw;
+  const new_arr_capacity_bl  = new_arr_capacity * sl.capacity_segment_split.business_large;
+  const new_arr_capacity_ent = new_arr_capacity * sl.capacity_segment_split.enterprise;
 
   const new_arr_graduation = graduated_arr_in;
   const new_arr_graduation_bl  = new_arr_graduation * sl.capacity_segment_split.business_large;

@@ -68,13 +68,22 @@ export interface Assumptions {
     blended_seat_price: { business_large: number; enterprise: number };
     enterprise_avg_acv: number;
     named_pipeline: PipelineDeal[];
+    /** Weighted (post-stage-probability) pipeline ACV across months 1..(seam-1).
+     *  The engine distributes this scalar evenly across pre-seam months to produce
+     *  `new_arr_named_pipeline`. The deal list above is illustrative-only (table + chart);
+     *  consuming both would double-discount. */
+    named_pipeline_weighted_acv: number;
     stage_probability: {
       qualified: number;
       discovery: number;
       proposal: number;
       commit: number;
     };
-    pipeline_capacity_seam_month: number;
+    /** First month at which named pipeline begins to fade out. Before this, pipeline runs at full weight. */
+    pipeline_taper_start_month: number;
+    /** Last month of named-pipeline contribution. After this, capacity carries 100% of new ARR.
+     *  Capacity weight ramps in over the taper window as 1 - pipelineWeight, so no double-count. */
+    pipeline_taper_end_month: number;
     capacity_segment_split: { business_large: number; enterprise: number };
     sales_capacity: {
       hiring_plan: HiringPlanEntry[];
@@ -121,7 +130,8 @@ export interface Assumptions {
       hosting_pct_of_revenue: number;
       payment_processing_pct_self_serve: number;
       payment_processing_pct_sales_led: number;
-      ai_inference_pct_of_business_enterprise_arr: number;
+      /** AI-inference COGS as fraction of total paid ARR (Plus + Business + Enterprise). */
+      ai_inference_pct_of_paid_arr: number;
     };
     /** SBC ratios applied to cash comp by function (spec §3.2). */
     sbc: {

@@ -58,7 +58,12 @@ export default function PipelineTable() {
   return (
     <div className="sketch-box" style={{ padding: '14px 18px' }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 8 }}>
-        <div className="hand" style={{ fontSize: 18 }}>Named pipeline · months 1–6</div>
+        <div>
+          <div className="hand" style={{ fontSize: 18 }}>Named pipeline · months 1–6</div>
+          <div style={{ fontSize: 10, color: 'var(--ink-4)', marginTop: 2 }}>
+            Illustrative — engine consumes <code>named_pipeline_weighted_acv</code> scalar
+          </div>
+        </div>
         <div style={{ fontSize: 11, color: 'var(--ink-3)' }}>
           {deals.length} deals · {fmtMoneyScaled(totalAcv)} ACV · {fmtMoneyScaled(totalWeighted)} weighted
         </div>
