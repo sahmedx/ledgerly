@@ -123,6 +123,22 @@ export interface Assumptions {
       payment_processing_pct_sales_led: number;
       ai_inference_pct_of_business_enterprise_arr: number;
     };
+    /** SBC ratios applied to cash comp by function (spec §3.2). */
+    sbc: {
+      rd_sbc_pct: number;
+      sm_sbc_pct: number;
+      ga_sbc_pct: number;
+      cs_sbc_pct: number;
+    };
+    /** D&A placeholder (spec §3.1). Flat monthly amount. */
+    da: {
+      monthly_da_amount: number;
+    };
+    /** Cost allocation between segments (spec §4). Surfaced in P&L drawer. */
+    allocation: {
+      marketing_self_serve_pct: number;
+      rd_self_serve_pct: number;
+    };
   };
   scenarios: {
     base: ScenarioShocks;
@@ -180,16 +196,58 @@ export interface MonthlyTotal {
 }
 
 export interface MonthlyCosts {
-  cogs: number;
+  // COGS sub-lines (spec §7.1)
+  hosting: number;
+  payment_processing_self_serve: number;
+  payment_processing_sales_led: number;
+  ai_inference_self_serve: number;     // direct: business_small only
+  ai_inference_sales_led: number;      // direct: business_large + enterprise
+  cs_in_cogs: number;                  // includes CS SBC × cs_in_cogs_pct
+  cogs: number;                        // = sum of above
+
   gross_profit: number;
   gross_margin_pct: number;
+
+  // S&M sub-lines
+  sm_cash_comp: number;
+  sm_sbc: number;
+  sm_programs: number;
   sm_total: number;
+
+  // R&D sub-lines
+  rd_cash_comp: number;
+  rd_sbc: number;
+  rd_tooling: number;
   rd_total: number;
+
+  // G&A sub-lines
+  ga_cash_comp: number;
+  ga_sbc: number;
+  ga_te: number;
+  da: number;                          // D&A flows through G&A per spec §3.3
   ga_total: number;
-  cs_total: number;
+
+  // CS opex sub-lines
+  cs_cash_comp: number;                // opex portion only (cs_cash_comp × (1 - cs_in_cogs_pct))
+  cs_sbc: number;                      // opex portion only (cs_sbc × (1 - cs_in_cogs_pct))
+  cs_in_opex: number;                  // = cs_cash_comp + cs_sbc above
+  cs_total: number;                    // full CS spend incl. COGS portion (kept for back-compat)
+
+  total_sbc: number;                   // FULL SBC (incl. cs_sbc COGS half) — spec §3.2 add-back
+
   opex_total: number;
-  operating_income: number;
-  operating_margin_pct: number;
+
+  // GAAP / non-GAAP / EBITDA (spec §3.4-§3.5)
+  operating_income: number;            // = operating_income_gaap (kept for back-compat)
+  operating_margin_pct: number;        // = operating_margin_gaap_pct
+  operating_income_gaap: number;
+  operating_margin_gaap_pct: number;
+  operating_income_non_gaap: number;
+  operating_margin_non_gaap_pct: number;
+  ebitda: number;
+  ebitda_margin_pct: number;
+  adjusted_ebitda: number;
+  adjusted_ebitda_margin_pct: number;
 }
 
 export interface MonthlyHeadcount {
@@ -209,7 +267,10 @@ export interface MonthlyKpis {
   grr_ttm: number;
   magic_number: number;
   burn_multiple: number;
-  rule_of_40: number;
+  /** Rule of 40 = YoY ARR growth + non-GAAP operating margin. Null for t < 13 (no t-12 ARR). */
+  rule_of_40: number | null;
+  /** YoY ARR growth = (arr[t] - arr[t-12]) / arr[t-12]. Null for t < 13. */
+  arr_yoy_growth: number | null;
   cac_payback_self_serve: number;
   cac_payback_sales_led: number;
   ltv_cac_self_serve: number;
@@ -221,9 +282,9 @@ export interface MonthlyKpis {
 }
 
 export interface MonthlyResult {
-  month_index: number;       // 1..18
-  calendar_label: string;    // 'Jan 26'..'Jun 27'
-  is_actual: boolean;        // months 1..3 = actual, 4..18 = forecast
+  month_index: number;       // 1..24
+  calendar_label: string;    // 'Jan 26'..'Dec 27'
+  is_actual: boolean;        // months 1..3 = actual, 4..24 = forecast
   self_serve: MonthlySelfServe;
   sales_led: MonthlySalesLed;
   total: MonthlyTotal;
@@ -244,8 +305,84 @@ export interface ValidationResult {
   detail: string;
 }
 
+/** Period roll-up for the P&L view. Sums dollar lines; takes period-end values for
+ *  ARR-based metrics, NRR/GRR, and headcount; recomputes margins from period sums. */
+export interface PeriodResult {
+  /** 'Q1 2026' | 'FY2026' | etc. */
+  label: string;
+  /** Inclusive start month index (1..24). */
+  start_month: number;
+  /** Inclusive end month index (1..24). */
+  end_month: number;
+
+  // Revenue
+  self_serve_revenue: number;
+  self_serve_revenue_plus: number;
+  self_serve_revenue_business_small: number;
+  sales_led_revenue: number;
+  sales_led_revenue_business_large: number;
+  sales_led_revenue_enterprise: number;
+  total_revenue: number;
+
+  // COGS sub-lines + total
+  hosting: number;
+  payment_processing_self_serve: number;
+  payment_processing_sales_led: number;
+  ai_inference_self_serve: number;
+  ai_inference_sales_led: number;
+  cs_in_cogs: number;
+  cogs: number;
+
+  gross_profit: number;
+  gross_margin_pct: number;             // recomputed: gross_profit / total_revenue
+
+  // Opex sub-lines + totals
+  sm_cash_comp: number;
+  sm_sbc: number;
+  sm_programs: number;
+  sm_total: number;
+  rd_cash_comp: number;
+  rd_sbc: number;
+  rd_tooling: number;
+  rd_total: number;
+  ga_cash_comp: number;
+  ga_sbc: number;
+  ga_te: number;
+  da: number;
+  ga_total: number;
+  cs_cash_comp: number;                 // opex portion only
+  cs_sbc: number;                       // opex portion only
+  cs_in_opex: number;
+  total_sbc: number;                    // FULL SBC (incl. CS COGS half)
+  opex_total: number;
+
+  // Operating income / EBITDA pairs (recomputed from period sums)
+  operating_income_gaap: number;
+  operating_margin_gaap_pct: number;
+  operating_income_non_gaap: number;
+  operating_margin_non_gaap_pct: number;
+  ebitda: number;
+  ebitda_margin_pct: number;
+  adjusted_ebitda: number;
+  adjusted_ebitda_margin_pct: number;
+
+  // Period-end snapshots
+  ending_arr: number;
+  ending_total_headcount: number;
+  ending_nrr_ttm: number;
+  ending_grr_ttm: number;
+  /** YoY ARR growth at period end. Null when t < 13 (no prior-year comparator). */
+  arr_yoy_growth: number | null;
+  /** Rule of 40 at period end (non-GAAP). Null when t < 13. */
+  rule_of_40: number | null;
+}
+
 export interface Results {
   monthly: MonthlyResult[];
+  /** 8 quarters: Q1'26 → Q4'27. */
+  quarterly: PeriodResult[];
+  /** 2 annuals: FY26, FY27. */
+  annual: PeriodResult[];
   pipeline_resolved: ResolvedDeal[];
   validations: ValidationResult[];
   starting_arr: number;

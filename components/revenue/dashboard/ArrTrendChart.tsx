@@ -71,7 +71,7 @@ export default function ArrTrendChart() {
     <div className="sketch-box" style={{ padding: '14px 18px' }}>
       <div style={{ display: 'flex', alignItems: 'baseline', justifyContent: 'space-between', marginBottom: 6 }}>
         <div className="hand" style={{ fontSize: 18 }}>
-          18-month {metric.toUpperCase()} trend · 3 scenarios
+          24-month {metric.toUpperCase()} trend · 3 scenarios
         </div>
         <div style={{ display: 'inline-flex', gap: 0, border: '1.2px solid var(--line-soft)', padding: 2, background: '#fcfbf7' }}>
           {METRICS.map(m => (

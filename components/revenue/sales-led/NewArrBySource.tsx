@@ -76,7 +76,7 @@ export default function NewArrBySource() {
           const nH = h(named[i]);
           const cH = h(cap[i]);
           const gH = h(grad[i]);
-          let yCursor = y(named[i]);
+          const yCursor = y(named[i]);
           return (
             <g key={i}>
               <rect x={x(i)} width={barW} y={yCursor} height={nH}

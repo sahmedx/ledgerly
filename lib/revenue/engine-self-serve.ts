@@ -4,7 +4,7 @@ import type { Assumptions, MonthlySelfServe, ScenarioShocks, SelfServeTierId } f
 
 export interface SelfServeCohort {
   tier: SelfServeTierId;
-  acquisition_month: number;     // 0 = legacy day-0, 1..18 = new
+  acquisition_month: number;     // 0 = legacy day-0, 1..24 = new
   is_legacy: boolean;
   initial_workspaces: number;
   initial_seats_per_workspace: number;

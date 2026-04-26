@@ -1,6 +1,6 @@
 'use client';
 
-export type ModuleId = 'expenses' | 'revenue';
+export type ModuleId = 'expenses' | 'revenue' | 'pnl';
 
 interface Props {
   activeModule: ModuleId;
@@ -10,11 +10,11 @@ interface Props {
 const MODULES: { id: ModuleId; label: string; icon: string }[] = [
   { id: 'expenses', label: 'Expenses', icon: '▦' },
   { id: 'revenue',  label: 'Revenue',  icon: '◭' },
+  { id: 'pnl',      label: 'P&L',      icon: '⊟' },
 ];
 
 const COMING_SOON = [
   { label: 'Headcount',  icon: '◯' },
-  { label: 'P&L',        icon: '⊟' },
   { label: 'Scenarios',  icon: '⌘' },
   { label: 'Reports',    icon: '⎚' },
 ];

@@ -111,7 +111,7 @@ export default function CapacityChart() {
 
       <div style={{ display: 'flex', justifyContent: 'space-between', fontSize: 10, color: 'var(--ink-4)', marginTop: 4 }}>
         <span>Active reps end of period: {fmtCount(reps[reps.length - 1])}</span>
-        <span>Capacity {fmtMoneyScaled(cap[cap.length - 1])} · New (m18) {fmtMoneyScaled(newCapArr[newCapArr.length - 1])}</span>
+        <span>Capacity {fmtMoneyScaled(cap[cap.length - 1])} · New (m24) {fmtMoneyScaled(newCapArr[newCapArr.length - 1])}</span>
       </div>
     </div>
   );

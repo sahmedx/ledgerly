@@ -22,11 +22,6 @@ export function computeKpisInPlace(monthly: MonthlyResult[], A: Assumptions): vo
     + A.sales_led.existing_customer_dynamics.enterprise.gross_churn
   ) / 2;
 
-  const day0_total_arr =
-      A.starting_state.self_serve_arr.plus
-    + A.starting_state.self_serve_arr.business_small
-    + A.starting_state.sales_led_arr.business_large
-    + A.starting_state.sales_led_arr.enterprise;
   const day0_sl_arr =
       A.starting_state.sales_led_arr.business_large
     + A.starting_state.sales_led_arr.enterprise;
@@ -103,16 +98,17 @@ export function computeKpisInPlace(monthly: MonthlyResult[], A: Assumptions): vo
       if (net_new > 0) burn_multiple = op_loss / net_new;
     }
 
-    // Rule of 40
-    let yoy_growth = 0;
+    // ARR YoY growth — null for t < 13 (no t-12 ARR available, spec §3.6).
+    // Rule of 40 = YoY ARR growth + non-GAAP operating margin (spec §3.6).
+    let arr_yoy_growth: number | null = null;
+    let rule_of_40: number | null = null;
     if (i >= 12) {
       const arr_yoy = totalArrFromMonthly(monthly[i - 12]);
-      if (arr_yoy > 0) yoy_growth = (total_arr - arr_yoy) / arr_yoy;
-    } else if (day0_total_arr > 0) {
-      const months_elapsed = i + 1;
-      yoy_growth = ((total_arr - day0_total_arr) / day0_total_arr) * (12 / months_elapsed);
+      if (arr_yoy > 0) {
+        arr_yoy_growth = (total_arr - arr_yoy) / arr_yoy;
+        rule_of_40 = (arr_yoy_growth + m.costs.operating_margin_non_gaap_pct) * 100;
+      }
     }
-    const rule_of_40 = (yoy_growth + m.costs.operating_margin_pct) * 100;
 
     // CAC by segment
     const flc = A.costs.sm.flc;
@@ -156,6 +152,7 @@ export function computeKpisInPlace(monthly: MonthlyResult[], A: Assumptions): vo
       magic_number,
       burn_multiple,
       rule_of_40,
+      arr_yoy_growth,
       cac_payback_self_serve: ss_payback,
       cac_payback_sales_led: sl_payback,
       ltv_cac_self_serve: ss_ltv_cac,

@@ -13,6 +13,7 @@ import TimelineView from '@/components/views/TimelineView';
 import VarianceView from '@/components/views/VarianceView';
 import RevenueProvider from '@/components/revenue/RevenueProvider';
 import RevenueModule from '@/components/revenue/RevenueModule';
+import PnlModule from '@/components/pnl/PnlModule';
 
 const TWEAK_DEFAULTS: Tweaks = {
   density: 'regular',
@@ -46,6 +47,7 @@ export default function Page() {
   const [module, setModule] = useState<ModuleId>('expenses');
   const [expenseView, setExpenseView] = useState<string>('grid');
   const [revenueView, setRevenueView] = useState<string>('dashboard');
+  const [pnlView, setPnlView] = useState<string>('consolidated');
 
   const [overrides, setOverridesRaw] = useLocalStorage<OverridesMap>('ledgerly-overrides', {});
   const [tweaks, setTweaksRaw] = useState<Tweaks>(TWEAK_DEFAULTS);
@@ -87,15 +89,25 @@ export default function Page() {
     );
   }
 
-  // Revenue module
+  // Revenue + P&L share a single RevenueProvider so a single engine compute drives both.
   return (
     <RevenueProvider>
-      <RevenueModule
-        module={module}
-        onModuleChange={setModule}
-        activeView={revenueView}
-        onViewChange={setRevenueView}
-      />
+      {module === 'revenue' && (
+        <RevenueModule
+          module={module}
+          onModuleChange={setModule}
+          activeView={revenueView}
+          onViewChange={setRevenueView}
+        />
+      )}
+      {module === 'pnl' && (
+        <PnlModule
+          module={module}
+          onModuleChange={setModule}
+          activeView={pnlView}
+          onViewChange={setPnlView}
+        />
+      )}
     </RevenueProvider>
   );
 }

@@ -101,7 +101,7 @@ export const DEFAULT_ASSUMPTIONS: Assumptions = {
     pipeline_capacity_seam_month: 7,
     capacity_segment_split: { business_large: 0.60, enterprise: 0.40 },
     sales_capacity: {
-      hiring_plan: Array.from({ length: 18 }, (_, i) => ({ month: i + 1, count: 3 })),
+      hiring_plan: Array.from({ length: 24 }, (_, i) => ({ month: i + 1, count: 3 })),
       ramp_curve: RAMP_CURVE_12,
       fully_ramped_quota_annual: 1_200_000,
       attainment: 0.80,
@@ -124,15 +124,15 @@ export const DEFAULT_ASSUMPTIONS: Assumptions = {
       reps_per_manager: 8,
       flc: { rep: 300_000, sdr: 150_000, se: 250_000, manager: 400_000, mktg: 250_000 },
       marketing_programs_pct_of_revenue: 0.08,
-      marketing_hiring_plan: Array.from({ length: 18 }, (_, i) => ({ month: i + 1, count: 1 })),
+      marketing_hiring_plan: Array.from({ length: 24 }, (_, i) => ({ month: i + 1, count: 1 })),
     },
     rd: {
-      hiring_plan: Array.from({ length: 18 }, (_, i) => ({ month: i + 1, count: 5 })),
+      hiring_plan: Array.from({ length: 24 }, (_, i) => ({ month: i + 1, count: 5 })),
       flc_per_eng: 400_000,
       tooling_pct_of_revenue: 0.02,
     },
     ga: {
-      hiring_plan: Array.from({ length: 18 }, (_, i) => ({ month: i + 1, count: 1 })),
+      hiring_plan: Array.from({ length: 24 }, (_, i) => ({ month: i + 1, count: 1 })),
       flc_per_ga: 250_000,
       te_pct_of_revenue: 0.015,
     },
@@ -147,6 +147,19 @@ export const DEFAULT_ASSUMPTIONS: Assumptions = {
       payment_processing_pct_self_serve: 0.03,
       payment_processing_pct_sales_led: 0.01,
       ai_inference_pct_of_business_enterprise_arr: 0.06,
+    },
+    sbc: {
+      rd_sbc_pct: 0.65,
+      sm_sbc_pct: 0.35,
+      ga_sbc_pct: 0.50,
+      cs_sbc_pct: 0.30,
+    },
+    da: {
+      monthly_da_amount: 500_000,
+    },
+    allocation: {
+      marketing_self_serve_pct: 0.70,
+      rd_self_serve_pct: 0.60,
     },
   },
   scenarios: {

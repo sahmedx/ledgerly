@@ -9,8 +9,8 @@ export default function MagicNumberTrend() {
   const { results, activeScenario } = useRevenue();
   const monthly = results[activeScenario].monthly;
 
-  // Quarterly resolution: take months 3, 6, 9, 12, 15, 18 (i = 2,5,8,11,14,17)
-  const quarters = [3, 6, 9, 12, 15, 18].map(t => ({
+  // Quarterly resolution: months 3, 6, 9, …, 24 (i = 2,5,8,…,23)
+  const quarters = [3, 6, 9, 12, 15, 18, 21, 24].map(t => ({
     label: monthly[t - 1].calendar_label,
     value: monthly[t - 1].kpis.magic_number,
   }));

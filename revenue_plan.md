@@ -1,4 +1,4 @@
-# Ledgerly — Revenue Module: Implementation Plan
+# Ledgerly — Revenue Module: Implementation Plan (Completed and built)
 
 ## Context
 

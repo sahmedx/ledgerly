@@ -23,7 +23,10 @@ const ROWS: RowSpec[] = [
   { label: 'Total OpEx',         fn: r => fmtMoneyScaled(r.monthly.reduce((s, m) => s + m.costs.opex_total, 0), { precision: 1 }) },
   { label: 'Ending headcount',   fn: r => fmtCount(last(r).headcount.total) },
   { label: 'Ending NRR (TTM)',   fn: r => fmtPlainPct(last(r).kpis.nrr_ttm, 1) },
-  { label: 'Rule of 40',         fn: r => last(r).kpis.rule_of_40.toFixed(1) },
+  { label: 'Rule of 40',         fn: r => {
+    const v = last(r).kpis.rule_of_40;
+    return v === null ? '—' : v.toFixed(1);
+  } },
 ];
 
 function last(r: Results) {

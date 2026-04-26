@@ -2,10 +2,6 @@
 
 FP&A vendor expense forecasting tool. Sketch-aesthetic React app with 4 switchable views (Grid, Split, Timeline, Variance). Built as a portfolio piece — no backend, all mock data, client-side only.
 
-## Implementation plan
-
-Read `plan.md` at the start of every session. It is the source of truth for phase status, file structure, component specs, and verification steps.
-
 **Current phase: 1 (approved — Phase 2 next)**
 
 Update this line when a phase is approved.

@@ -5,7 +5,7 @@ import LegendSwatch from '../shared/LegendSwatch';
 
 const W = 560, H = 220;
 const padL = 44, padR = 16, padT = 16, padB = 28;
-const AGES = 18;
+const AGES = 24;
 
 export default function SeatExpansionChart() {
   const { assumptions: A } = useRevenue();

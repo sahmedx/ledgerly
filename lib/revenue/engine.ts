@@ -10,11 +10,14 @@ import { initSalesLedState, stepSalesLed } from './engine-sales-led';
 import { initBillingsState, computeBillings } from './engine-billings';
 import { computeCosts } from './engine-costs';
 import { computeKpisInPlace } from './engine-kpis';
+import { buildQuarterly, buildAnnual } from './engine-rollups';
 import { runValidations } from './validation';
 
-const MONTHS = 18;
+const MONTHS = 24;
 const ZERO_KPIS = {
-  nrr_ttm: 0, grr_ttm: 0, magic_number: 0, burn_multiple: 0, rule_of_40: 0,
+  nrr_ttm: 0, grr_ttm: 0, magic_number: 0, burn_multiple: 0,
+  rule_of_40: null as number | null,
+  arr_yoy_growth: null as number | null,
   cac_payback_self_serve: 0, cac_payback_sales_led: 0,
   ltv_cac_self_serve: 0, ltv_cac_sales_led: 0,
   arpa_self_serve: 0, arpa_sales_led: 0, arpa_blended: 0, total_logos: 0,
@@ -99,6 +102,10 @@ export function simulate(assumptionsRaw: Assumptions, scenario: ScenarioId = 'ba
     };
   });
 
+  // Period roll-ups for the P&L view
+  const quarterly = buildQuarterly(monthly);
+  const annual = buildAnnual(monthly);
+
   // Validations
   const validations = runValidations(monthly, A);
 
@@ -110,6 +117,8 @@ export function simulate(assumptionsRaw: Assumptions, scenario: ScenarioId = 'ba
 
   return {
     monthly,
+    quarterly,
+    annual,
     pipeline_resolved,
     validations,
     starting_arr: day0_total_arr,
