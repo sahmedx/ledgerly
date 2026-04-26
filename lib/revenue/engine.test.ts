@@ -155,13 +155,9 @@ describe('engine — SBC + GAAP/non-GAAP/EBITDA bridges', () => {
     }
   });
 
-  it('arr_yoy_growth and rule_of_40 are null for months 1..12, defined for 13..24', () => {
+  it('arr_yoy_growth and rule_of_40 are defined for all 24 months (annualized for m1..12)', () => {
     const r = simulate(DEFAULT_ASSUMPTIONS, 'base');
-    for (let i = 0; i < 12; i++) {
-      expect(r.monthly[i].kpis.arr_yoy_growth).toBeNull();
-      expect(r.monthly[i].kpis.rule_of_40).toBeNull();
-    }
-    for (let i = 12; i < 24; i++) {
+    for (let i = 0; i < 24; i++) {
       expect(r.monthly[i].kpis.arr_yoy_growth).not.toBeNull();
       expect(r.monthly[i].kpis.rule_of_40).not.toBeNull();
     }

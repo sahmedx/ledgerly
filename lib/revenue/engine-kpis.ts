@@ -53,6 +53,10 @@ export function computeKpisInPlace(monthly: MonthlyResult[], A: Assumptions): vo
   const day0_sl_arr =
       A.starting_state.sales_led_arr.business_large
     + A.starting_state.sales_led_arr.enterprise;
+  const day0_total_arr =
+      A.starting_state.self_serve_arr.plus
+    + A.starting_state.self_serve_arr.business_small
+    + day0_sl_arr;
 
   // Blended new-logos estimate: use avg ARR per logo weighted by capacity split
   const bl_avg_arr_per_logo = A.sales_led.avg_seats_per_logo.business_large
@@ -107,6 +111,9 @@ export function computeKpisInPlace(monthly: MonthlyResult[], A: Assumptions): vo
     }
 
     // Magic Number (quarterly): (ARR[t] - ARR[t-3]) × 4 / sum(S&M[t-3..t-1])
+    // Magic Number (ARR-based, GAAP S&M): ARR is already annualized, so the
+    // 3-mo ARR delta divided by quarterly GAAP S&M (cash + SBC + non-HC).
+    // Earlier formula multiplied by 4, which double-annualized.
     let magic_number = 0;
     if (i >= 3) {
       const arr_t3 = totalArrFromMonthly(monthly[i - 3]);
@@ -114,7 +121,7 @@ export function computeKpisInPlace(monthly: MonthlyResult[], A: Assumptions): vo
           monthly[i - 3].costs.sm_total
         + monthly[i - 2].costs.sm_total
         + monthly[i - 1].costs.sm_total;
-      if (sm_3mo > 0) magic_number = (total_arr - arr_t3) * 4 / sm_3mo;
+      if (sm_3mo > 0) magic_number = (total_arr - arr_t3) / sm_3mo;
     }
 
     // Burn multiple
@@ -126,16 +133,21 @@ export function computeKpisInPlace(monthly: MonthlyResult[], A: Assumptions): vo
       if (net_new > 0) burn_multiple = op_loss / net_new;
     }
 
-    // ARR YoY growth — null for t < 13 (no t-12 ARR available, spec §3.6).
-    // Rule of 40 = YoY ARR growth + non-GAAP operating margin (spec §3.6).
+    // ARR YoY growth + Rule of 40 (GAAP operating margin).
+    // For i >= 12, use true t-12 comparator. For i < 12 (FY26), annualize Day-0 →
+    // current growth via compound factor so 2026 quarters and FY26 are not blank.
     let arr_yoy_growth: number | null = null;
     let rule_of_40: number | null = null;
     if (i >= 12) {
       const arr_yoy = totalArrFromMonthly(monthly[i - 12]);
       if (arr_yoy > 0) {
         arr_yoy_growth = (total_arr - arr_yoy) / arr_yoy;
-        rule_of_40 = (arr_yoy_growth + m.costs.operating_margin_non_gaap_pct) * 100;
+        rule_of_40 = (arr_yoy_growth + m.costs.operating_margin_gaap_pct) * 100;
       }
+    } else if (day0_total_arr > 0) {
+      const months_elapsed = i + 1; // 1..12
+      arr_yoy_growth = Math.pow(total_arr / day0_total_arr, 12 / months_elapsed) - 1;
+      rule_of_40 = (arr_yoy_growth + m.costs.operating_margin_gaap_pct) * 100;
     }
 
     // CAC by segment

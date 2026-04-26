@@ -103,7 +103,7 @@ export const DEFAULT_ASSUMPTIONS: Assumptions = {
     pipeline_taper_end_month: 9,
     capacity_segment_split: { business_large: 0.50, enterprise: 0.50 },
     sales_capacity: {
-      hiring_plan: Array.from({ length: 24 }, (_, i) => ({ month: i + 1, count: 3 })),
+      hiring_plan: Array.from({ length: 24 }, (_, i) => ({ month: i + 1, count: 6 })),
       ramp_curve: RAMP_CURVE_12,
       fully_ramped_quota_annual: 1_200_000,
       attainment: 0.80,
@@ -126,15 +126,15 @@ export const DEFAULT_ASSUMPTIONS: Assumptions = {
       reps_per_manager: 8,
       flc: { rep: 300_000, sdr: 150_000, se: 250_000, manager: 400_000, mktg: 250_000 },
       marketing_programs_pct_of_revenue: 0.16,
-      marketing_hiring_plan: Array.from({ length: 24 }, (_, i) => ({ month: i + 1, count: 1 })),
+      marketing_hiring_plan: Array.from({ length: 24 }, (_, i) => ({ month: i + 1, count: 2 })),
     },
     rd: {
-      hiring_plan: Array.from({ length: 24 }, (_, i) => ({ month: i + 1, count: 5 })),
+      hiring_plan: Array.from({ length: 24 }, (_, i) => ({ month: i + 1, count: 7 })),
       flc_per_eng: 400_000,
       tooling_pct_of_revenue: 0.04,
     },
     ga: {
-      hiring_plan: Array.from({ length: 24 }, (_, i) => ({ month: i + 1, count: 1 })),
+      hiring_plan: Array.from({ length: 24 }, (_, i) => ({ month: i + 1, count: 2 })),
       flc_per_ga: 250_000,
       te_pct_of_revenue: 0.090,
     },

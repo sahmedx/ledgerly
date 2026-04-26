@@ -15,7 +15,7 @@ const ASSUMPTIONS = [
   { id: 10, text: 'No working capital model beyond deferred revenue. AR / AP / prepaids not modeled.' },
   { id: 11, text: 'Day-0 sales-led renewal anniversary distribution puts 70% in Oct 26, 10% each in Jan / Apr / Jul. The Oct 26 billings spike (~$168M) is expected, not a bug. Validation check 3 (billings/revenue tie) still passes.' },
   { id: 12, text: 'SBC modeled as ratio of cash comp by function (R&D 65%, S&M 35%, G&A 50%, CS 30%). CS SBC follows the cs_in_cogs_pct split. No grant-cohort modeling, no seasonality, no ASC 718 graded vesting. V2 could refine these.' },
-  { id: 13, text: 'GAAP and Non-GAAP both shown. Non-GAAP excludes SBC, per public SaaS convention. Adjusted EBITDA = EBITDA + SBC add-back is the metric investors lead with. Rule of 40 uses Non-GAAP operating margin.' },
+  { id: 13, text: 'GAAP and Non-GAAP both shown. Non-GAAP excludes SBC, per public SaaS convention. Adjusted EBITDA = EBITDA + SBC add-back is the metric investors lead with. Rule of 40 uses GAAP operating margin (reported, not SBC-adjusted).' },
   { id: 14, text: 'D&A is a flat $500k/month placeholder. V2 will derive D&A from a capex schedule + intangibles amortization.' },
   { id: 15, text: 'Segment P&Ls: direct costs (quota rep comp, payment processing, AI inference by tier) attribute 100% to segment. Shared costs (G&A, hosting) split pro rata to revenue. Strategic costs (marketing, R&D) use configurable splits (default 70/30 marketing, 60/40 R&D toward self-serve).' },
   { id: 16, text: 'Out of scope (V2): below-the-line items (interest, other inc/exp, taxes, net income), dilution / share count, statement of cash flows, TTM P&L view, variance vs. prior period, CSV / Excel export.' },

@@ -72,7 +72,7 @@ Headcount build for 920: S&M (100 reps + 50 SDRs + 30 SEs + 13 mgrs + 90 mktg = 
 | `pipeline_taper_start_month` | 4 | First month named pipeline begins to fade |
 | `pipeline_taper_end_month` | 9 | Last month of named-pipeline contribution; capacity ramps in over the same window as `1 − pipelineWeight` |
 | `capacity_segment_split` | 50% BL / 50% ENT | new bookings allocation (was 60/40; shifted toward enterprise) |
-| `sales_capacity.hiring_plan` | 3 reps/mo × 24 | rep-hire cadence |
+| `sales_capacity.hiring_plan` | 6 reps/mo × 24 | rep-hire cadence (was 3; doubled to slow margin expansion) |
 | `sales_capacity.ramp_curve` | 0/0/0/.33/.33/.33/.66/.66/.66/1/1/1 | productivity by month-of-tenure |
 | `sales_capacity.fully_ramped_quota_annual` | $1.2M | annual quota per ramped rep |
 | `sales_capacity.attainment` | 0.80 | % of quota actually closed |
@@ -100,11 +100,11 @@ Headcount build for 920: S&M (100 reps + 50 SDRs + 30 SEs + 13 mgrs + 90 mktg = 
 | `sm.flc.manager` | $400k | |
 | `sm.flc.mktg` | $250k | marketing FLC |
 | `sm.marketing_programs_pct_of_revenue` | 16% | S&M non-HC expense (was 8%; doubled) |
-| `sm.marketing_hiring_plan` | 1/mo × 24 | mktg hire cadence |
-| `rd.hiring_plan` | 5/mo × 24 | engineer hire cadence |
+| `sm.marketing_hiring_plan` | 2/mo × 24 | mktg hire cadence (was 1; doubled) |
+| `rd.hiring_plan` | 7/mo × 24 | engineer hire cadence (was 5; bumped to 7 to soften margin expansion without overhiring) |
 | `rd.flc_per_eng` | $400k | engineer FLC |
 | `rd.tooling_pct_of_revenue` | 4% | R&D non-HC expense (was 2%; doubled) |
-| `ga.hiring_plan` | 1/mo × 24 | G&A hire cadence |
+| `ga.hiring_plan` | 2/mo × 24 | G&A hire cadence (was 1; doubled) |
 | `ga.flc_per_ga` | $250k | G&A FLC |
 | `ga.te_pct_of_revenue` | 9.0% | G&A non-HC expense (was 1.5% → 4.5% with G&A 3× → 9% doubled here) |
 | `cs.csm_per_enterprise_logos` | 25 | 1 CSM per 25 ENT |
