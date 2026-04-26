@@ -6,10 +6,10 @@ export const STARTING_STATE = {
   workspaces:     { plus: 354_000, business_small: 48_600 },
   logos:          { business_large: 4_800, enterprise: 1_167 },
   free_users:     90_000_000,
-  total_headcount: 920,
+  total_headcount: 1100,
   quota_reps:      100,
   rd_headcount:    420,
-  ga_headcount:    90,
+  ga_headcount:    270,
   cs_headcount:    95,
   marketing_headcount: 90,
 } as const;

@@ -15,10 +15,10 @@ All revenue inputs live in `lib/revenue/defaults.ts` (+ `starting-state.ts` for 
 | `logos.business_large` | 4,800 | sales-led BL accounts ($115M / ($20 × 12 × 100 seats)) |
 | `logos.enterprise` | 1,167 | enterprise accounts ($175M / $150k ACV) |
 | `free_users` | 90M | free-tier user pool |
-| `total_headcount` | 920 | starting employee count (informational) |
+| `total_headcount` | 1,100 | starting employee count (informational; bumped with G&A 3× build) |
 | `quota_reps` | 100 | starting sales reps (was 50; doubled to match plausible AE productivity) |
 | `rd_headcount` | 420 | starting engineers |
-| `ga_headcount` | 90 | starting G&A |
+| `ga_headcount` | 270 | starting G&A (was 90; tripled — drives 3× cash + SBC) |
 | `cs_headcount` | 95 | starting CSMs (informational; engine derives from logos/ratios) |
 | `marketing_headcount` | 90 | starting marketing |
 
@@ -99,14 +99,14 @@ Headcount build for 920: S&M (100 reps + 50 SDRs + 30 SEs + 13 mgrs + 90 mktg = 
 | `sm.flc.se` | $250k | |
 | `sm.flc.manager` | $400k | |
 | `sm.flc.mktg` | $250k | marketing FLC |
-| `sm.marketing_programs_pct_of_revenue` | 8% | non-headcount marketing spend |
+| `sm.marketing_programs_pct_of_revenue` | 16% | non-headcount marketing spend (was 8%; doubled) |
 | `sm.marketing_hiring_plan` | 1/mo × 24 | mktg hire cadence |
 | `rd.hiring_plan` | 5/mo × 24 | engineer hire cadence |
 | `rd.flc_per_eng` | $400k | engineer FLC |
 | `rd.tooling_pct_of_revenue` | 2% | tooling/SaaS spend |
 | `ga.hiring_plan` | 1/mo × 24 | G&A hire cadence |
 | `ga.flc_per_ga` | $250k | G&A FLC |
-| `ga.te_pct_of_revenue` | 1.5% | T&E |
+| `ga.te_pct_of_revenue` | 4.5% | T&E (was 1.5%; tripled with G&A scale-up) |
 | `cs.csm_per_enterprise_logos` | 25 | 1 CSM per 25 ENT |
 | `cs.csm_per_business_large_logos` | 100 | 1 CSM per 100 BL |
 | `cs.flc_per_csm` | $200k | CSM FLC |
@@ -119,7 +119,7 @@ Headcount build for 920: S&M (100 reps + 50 SDRs + 30 SEs + 13 mgrs + 90 mktg = 
 | `sbc.sm_sbc_pct` | 35% | S&M SBC |
 | `sbc.ga_sbc_pct` | 50% | G&A SBC |
 | `sbc.cs_sbc_pct` | 30% | CS SBC |
-| `da.monthly_da_amount` | $500k | flat D&A placeholder |
+| `da.monthly_da_amount` | $1.5M | flat D&A placeholder (was $500k; tripled with G&A scale-up) |
 | `allocation.marketing_self_serve_pct` | 70% | mktg cost split |
 | `allocation.rd_self_serve_pct` | 60% | R&D cost split |
 

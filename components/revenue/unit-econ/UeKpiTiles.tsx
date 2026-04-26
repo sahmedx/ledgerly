@@ -2,19 +2,13 @@
 
 import { useRevenue } from '@/lib/revenue/contexts';
 import { fmtMoneyScaled, fmtNumberX } from '@/lib/revenue/format';
+import { blendedSelfServeChurn, cappedLtv, LTV_HORIZON_MONTHS } from '@/lib/revenue/engine-kpis';
 import type { MonthlyResult } from '@/lib/revenue/types';
-
-const SS_CHURN_MONTHLY = 0.04;
 
 /** Back out CAC from kpis.cac_payback × ARPA × GM / 12. */
 function deriveCac(payback_months: number, arpa: number, gm: number): number {
   if (payback_months <= 0 || arpa <= 0 || gm <= 0) return 0;
   return payback_months * arpa * gm / 12;
-}
-
-function deriveLtv(arpa: number, gm: number, monthly_churn: number): number {
-  if (monthly_churn <= 0 || arpa <= 0 || gm <= 0) return 0;
-  return arpa * gm / monthly_churn;
 }
 
 interface TileProps {
@@ -74,6 +68,9 @@ export default function UeKpiTiles() {
     assumptions.sales_led.existing_customer_dynamics.business_large.gross_churn
     + assumptions.sales_led.existing_customer_dynamics.enterprise.gross_churn
   ) / 2;
+  const ss_churn_monthly = blendedSelfServeChurn(
+    assumptions, last.self_serve.arr.plus, last.self_serve.arr.business_small,
+  );
 
   const gm = last.costs.gross_margin_pct;
   const ssArpa = last.kpis.arpa_self_serve;
@@ -81,14 +78,20 @@ export default function UeKpiTiles() {
 
   const ssCac = deriveCac(last.kpis.cac_payback_self_serve, ssArpa, gm);
   const slCac = deriveCac(last.kpis.cac_payback_sales_led, slArpa, gm);
-  const ssLtv = deriveLtv(ssArpa, gm, SS_CHURN_MONTHLY);
-  const slLtv = deriveLtv(slArpa, gm, sl_churn_monthly);
+  const ssLtv = cappedLtv(ssArpa, gm, ss_churn_monthly);
+  const slLtv = cappedLtv(slArpa, gm, sl_churn_monthly);
+
+  const ltvSub = (churn_monthly: number) => {
+    const life = Math.min(LTV_HORIZON_MONTHS, 1 / churn_monthly);
+    const churnPct = (churn_monthly * 100).toFixed(2);
+    return `${churnPct}% mo. churn · ${life.toFixed(0)}mo cap`;
+  };
 
   const tiles: TileProps[] = [
     { label: 'CAC · self-serve',  value: fmtMoneyScaled(ssCac, { precision: 0 }), sub: 'attribution: marketing' },
     { label: 'CAC · sales-led',   value: fmtMoneyScaled(slCac, { precision: 0 }), sub: 'sales + 30% mktg' },
-    { label: 'LTV · self-serve',  value: fmtMoneyScaled(ssLtv, { precision: 0 }), sub: `at ${(SS_CHURN_MONTHLY * 100).toFixed(1)}% mo. churn` },
-    { label: 'LTV · sales-led',   value: fmtMoneyScaled(slLtv, { precision: 0 }), sub: `at ${(sl_churn_monthly * 100).toFixed(2)}% mo. churn` },
+    { label: 'LTV · self-serve',  value: fmtMoneyScaled(ssLtv, { precision: 0 }), sub: ltvSub(ss_churn_monthly) },
+    { label: 'LTV · sales-led',   value: fmtMoneyScaled(slLtv, { precision: 0 }), sub: ltvSub(sl_churn_monthly) },
     { label: 'LTV/CAC · SS',      value: fmtNumberX(last.kpis.ltv_cac_self_serve, 1), tone: ltvCacTone(last.kpis.ltv_cac_self_serve) },
     { label: 'LTV/CAC · SL',      value: fmtNumberX(last.kpis.ltv_cac_sales_led, 1),  tone: ltvCacTone(last.kpis.ltv_cac_sales_led) },
     { label: 'Payback · SS',      value: `${last.kpis.cac_payback_self_serve.toFixed(1)} mo`, tone: paybackTone(last.kpis.cac_payback_self_serve) },

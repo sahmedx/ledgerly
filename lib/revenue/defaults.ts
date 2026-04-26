@@ -125,7 +125,7 @@ export const DEFAULT_ASSUMPTIONS: Assumptions = {
       se_ratio: 0.3,
       reps_per_manager: 8,
       flc: { rep: 300_000, sdr: 150_000, se: 250_000, manager: 400_000, mktg: 250_000 },
-      marketing_programs_pct_of_revenue: 0.08,
+      marketing_programs_pct_of_revenue: 0.16,
       marketing_hiring_plan: Array.from({ length: 24 }, (_, i) => ({ month: i + 1, count: 1 })),
     },
     rd: {
@@ -136,7 +136,7 @@ export const DEFAULT_ASSUMPTIONS: Assumptions = {
     ga: {
       hiring_plan: Array.from({ length: 24 }, (_, i) => ({ month: i + 1, count: 1 })),
       flc_per_ga: 250_000,
-      te_pct_of_revenue: 0.015,
+      te_pct_of_revenue: 0.045,
     },
     cs: {
       csm_per_enterprise_logos: 25,
@@ -157,7 +157,7 @@ export const DEFAULT_ASSUMPTIONS: Assumptions = {
       cs_sbc_pct: 0.30,
     },
     da: {
-      monthly_da_amount: 500_000,
+      monthly_da_amount: 1_500_000,
     },
     allocation: {
       marketing_self_serve_pct: 0.70,

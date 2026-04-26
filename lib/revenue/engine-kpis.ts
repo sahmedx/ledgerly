@@ -2,6 +2,11 @@
 
 import type { Assumptions, MonthlyResult } from './types';
 
+/** 84-month (7-year) LTV horizon cap. Perpetuity LTV (= ARPA × GM / churn) produces
+ *  $10M+ "lifetime" values for low-churn enterprise (1/0.0035 = 286 months implied life)
+ *  that no FP&A team defends. Cap to a realistic planning window. */
+export const LTV_HORIZON_MONTHS = 84;
+
 function totalArrFromMonthly(m: MonthlyResult): number {
   return (
     m.self_serve.arr.plus + m.self_serve.arr.business_small +
@@ -13,10 +18,33 @@ function salesLedArr(m: MonthlyResult): number {
   return m.sales_led.ending_arr.business_large + m.sales_led.ending_arr.enterprise;
 }
 
+/** Effective monthly churn implied by the 12-month retention point on the cohort curve.
+ *  surviving_frac(a) = floor + (1 - floor) × exp(-decay × a). */
+export function impliedMonthlyChurn(floor: number, decay: number): number {
+  const retention_12mo = floor + (1 - floor) * Math.exp(-decay * 12);
+  if (retention_12mo <= 0) return 1;
+  return 1 - Math.pow(retention_12mo, 1 / 12);
+}
+
+/** Capped LTV: gross profit accumulated over min(84-mo, 1/churn). */
+export function cappedLtv(arpa: number, gm: number, monthly_churn: number): number {
+  if (arpa <= 0 || gm <= 0 || monthly_churn <= 0) return 0;
+  const life_months = Math.min(LTV_HORIZON_MONTHS, 1 / monthly_churn);
+  return arpa * gm * life_months / 12;
+}
+
+/** Blended self-serve monthly churn, weighted by ARR mix (Plus + Business-small). */
+export function blendedSelfServeChurn(A: Assumptions, plus_arr: number, bs_arr: number): number {
+  const churn_plus = impliedMonthlyChurn(A.self_serve.retention.plus.floor, A.self_serve.retention.plus.decay);
+  const churn_bs   = impliedMonthlyChurn(A.self_serve.retention.business_small.floor, A.self_serve.retention.business_small.decay);
+  const total = plus_arr + bs_arr;
+  if (total <= 0) return (churn_plus + churn_bs) / 2;
+  return (plus_arr * churn_plus + bs_arr * churn_bs) / total;
+}
+
 export function computeKpisInPlace(monthly: MonthlyResult[], A: Assumptions): void {
-  // Approximations for LTV (single monthly churn rate per segment)
-  // self-serve: average 12-month churn from default Plus retention curve ≈ 4%
-  const ss_churn_monthly = 0.04;
+  // Sales-led blended gross churn (BL + ENT average). Self-serve churn varies with
+  // tier mix month-by-month, so it is derived inside the loop.
   const sl_churn_monthly = (
     A.sales_led.existing_customer_dynamics.business_large.gross_churn
     + A.sales_led.existing_customer_dynamics.enterprise.gross_churn
@@ -135,10 +163,11 @@ export function computeKpisInPlace(monthly: MonthlyResult[], A: Assumptions): vo
     const ss_cac = new_ss_logos > 0 ? ss_attributable_sm / new_ss_logos : 0;
     const sl_cac = new_sl_logos > 0 ? sl_attributable_sm / new_sl_logos : 0;
 
-    // LTV
+    // LTV — 84-month horizon cap, finite-life GP (industry-standard SaaS practice).
     const gm = m.costs.gross_margin_pct;
-    const ss_ltv = ss_churn_monthly > 0 ? arpa_ss * gm / ss_churn_monthly : 0;
-    const sl_ltv = sl_churn_monthly > 0 ? arpa_sl * gm / sl_churn_monthly : 0;
+    const ss_churn_monthly = blendedSelfServeChurn(A, m.self_serve.arr.plus, m.self_serve.arr.business_small);
+    const ss_ltv = cappedLtv(arpa_ss, gm, ss_churn_monthly);
+    const sl_ltv = cappedLtv(arpa_sl, gm, sl_churn_monthly);
 
     const ss_ltv_cac = ss_cac > 0 ? ss_ltv / ss_cac : 0;
     const sl_ltv_cac = sl_cac > 0 ? sl_ltv / sl_cac : 0;
