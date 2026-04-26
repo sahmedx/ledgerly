@@ -119,12 +119,12 @@ export function allocateMonthly(monthly: MonthlyResult[], A: Assumptions): Alloc
     const cs_ss = selfServeLogoWeightShare(m);
     const cs_sl = 1 - cs_ss;
 
-    // CS SBC has both an opex half (carried in c.cs_sbc) and a COGS half (bundled into
-    // c.cs_in_cogs). Recover the full and the COGS half so that segment-level
-    // total_sbc reconciles with consolidated total_sbc.
-    //   cs_sbc_full = c.cs_sbc / (1 - cs_in_cogs_pct)
-    //   cs_sbc_cogs_half = cs_sbc_full × cs_in_cogs_pct
-    const cs_sbc_full = c.cs_sbc / Math.max(1e-9, 1 - cs_in_cogs_pct);
+    // Recover full CS SBC from the bundled (cash + SBC) total. cs_total_with_sbc =
+    // cs_in_cogs + cs_in_opex, and cs_sbc_full / cs_total_with_sbc = sbc_pct / (1 + sbc_pct).
+    // This works at any cs_in_cogs_pct including 1.0 (full COGS).
+    const cs_total_with_sbc = c.cs_in_cogs + c.cs_in_opex;
+    const cs_sbc_pct_factor = A.costs.sbc.cs_sbc_pct / (1 + A.costs.sbc.cs_sbc_pct);
+    const cs_sbc_full = cs_total_with_sbc * cs_sbc_pct_factor;
     const cs_sbc_cogs_half = cs_sbc_full * cs_in_cogs_pct;
 
     const sm_split = splitSmCashComp(m, A);

@@ -110,7 +110,7 @@ Headcount build for 920: S&M (100 reps + 50 SDRs + 30 SEs + 13 mgrs + 90 mktg = 
 | `cs.csm_per_enterprise_logos` | 25 | 1 CSM per 25 ENT |
 | `cs.csm_per_business_large_logos` | 100 | 1 CSM per 100 BL |
 | `cs.flc_per_csm` | $200k | CSM FLC |
-| `cs.cs_in_cogs_pct` | 0.70 | 70% of CS lands in COGS |
+| `cs.cs_in_cogs_pct` | 1.0 | 100% of CS lands in COGS (was 70%; opex split removed for simplicity) |
 | `cogs.hosting_pct_of_revenue` | 8% | infra |
 | `cogs.payment_processing_pct_self_serve` | 3% | Stripe/Adyen on self-serve |
 | `cogs.payment_processing_pct_sales_led` | 1% | enterprise wire/ACH |

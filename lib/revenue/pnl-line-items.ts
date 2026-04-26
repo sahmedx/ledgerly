@@ -125,14 +125,7 @@ export const CONSOLIDATED_LINES: LineItem[] = [
   { id: 'ga_pct_excl', label: 'G&A as % of revenue (excl. SBC)', indent: 2, style: 'margin', kind: 'pct',
     accessor: p => p.total_revenue > 0 ? (p.ga_total - p.ga_sbc) / p.total_revenue : null },
 
-  // CS opex
-  { id: 'cs', label: 'Customer Success (opex portion)', indent: 1, style: 'sub', kind: 'label-only' },
-  { id: 'cs_cash', label: 'CS cash comp', indent: 2, style: 'subsub', kind: 'money',
-    accessor: p => p.cs_cash_comp },
-  { id: 'cs_sbc', label: 'CS stock-based comp', indent: 2, style: 'subsub', kind: 'money',
-    accessor: p => p.cs_sbc },
-  { id: 'cs_total', label: 'Total CS opex', indent: 1, style: 'subtotal', kind: 'money',
-    accessor: p => p.cs_in_opex },
+  // CS now flows entirely through COGS (cs_in_cogs_pct = 1.0). No opex section.
 
   // OpEx total
   { id: 'opex_total', label: 'Total Operating Expenses', indent: 0, style: 'subtotal', kind: 'money',

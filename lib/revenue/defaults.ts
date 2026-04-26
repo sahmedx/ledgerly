@@ -142,7 +142,7 @@ export const DEFAULT_ASSUMPTIONS: Assumptions = {
       csm_per_enterprise_logos: 25,
       csm_per_business_large_logos: 100,
       flc_per_csm: 200_000,
-      cs_in_cogs_pct: 0.70,
+      cs_in_cogs_pct: 1.0,
     },
     cogs: {
       hosting_pct_of_revenue: 0.08,
