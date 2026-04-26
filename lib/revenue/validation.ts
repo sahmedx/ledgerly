@@ -2,11 +2,6 @@
 
 import type { Assumptions, MonthlyResult, ValidationResult } from './types';
 
-function totalArr(m: MonthlyResult): number {
-  return m.self_serve.arr.plus + m.self_serve.arr.business_small
-    + m.sales_led.ending_arr.business_large + m.sales_led.ending_arr.enterprise;
-}
-
 export function runValidations(monthly: MonthlyResult[], A: Assumptions): ValidationResult[] {
   const results: ValidationResult[] = [];
 
@@ -123,6 +118,3 @@ export function runValidations(monthly: MonthlyResult[], A: Assumptions): Valida
 
   return results;
 }
-
-// avoid unused-import warning for totalArr (kept for future check ideas)
-void totalArr;

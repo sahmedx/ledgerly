@@ -6,6 +6,11 @@ import { useRevenue } from '@/lib/revenue/contexts';
 import { fmtMoneyScaled } from '@/lib/revenue/format';
 import DashboardView from './views/DashboardView';
 import SelfServeView from './views/SelfServeView';
+import SalesLedView from './views/SalesLedView';
+import UnitEconView from './views/UnitEconView';
+import ScenariosView from './views/ScenariosView';
+import ScenarioToggle from './shared/ScenarioToggle';
+import MethodologyFooter from './shared/MethodologyFooter';
 
 const VIEWS: ViewTab[] = [
   { id: 'dashboard',  label: 'Dashboard',  sub: 'overview',    icon: '◐' },
@@ -38,7 +43,13 @@ export default function RevenueModule({ module, onModuleChange, activeView, onVi
     breadcrumbSuffix: 'FY26 Plan · Revenue',
     title: VIEW_TITLES[activeView] ?? 'Revenue',
     subtitle: `Ending ARR ${fmtMoneyScaled(r.ending_arr, { precision: 1 })} · ${activeScenario} scenario`,
-    actions: <><button className="btn">⤓ Export</button><button className="btn btn-primary">Commit plan</button></>,
+    actions: (
+      <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
+        <ScenarioToggle />
+        <button className="btn">⤓ Export</button>
+        <button className="btn btn-primary">Commit plan</button>
+      </div>
+    ),
   };
 
   return (
@@ -50,22 +61,16 @@ export default function RevenueModule({ module, onModuleChange, activeView, onVi
       views={VIEWS}
       meta={meta}
     >
-      {activeView === 'dashboard'  && <DashboardView />}
-      {activeView === 'self-serve' && <SelfServeView />}
-      {activeView !== 'dashboard' && activeView !== 'self-serve' && <PlaceholderView name={VIEW_TITLES[activeView]} />}
-    </AppShell>
-  );
-}
-
-function PlaceholderView({ name }: { name: string }) {
-  return (
-    <div style={{ padding: 32 }}>
-      <div className="sketch-box" style={{ padding: 24, maxWidth: 560 }}>
-        <div className="hand" style={{ fontSize: 22 }}>{name}</div>
-        <div style={{ marginTop: 8, fontSize: 14, color: 'var(--ink-3)' }}>
-          Coming in a later sub-phase. Dashboard available now — switch via the top tabs.
+      <div style={{ display: 'flex', flexDirection: 'column', minHeight: '100%' }}>
+        <div style={{ flex: 1 }}>
+          {activeView === 'dashboard'  && <DashboardView />}
+          {activeView === 'self-serve' && <SelfServeView />}
+          {activeView === 'sales-led'  && <SalesLedView />}
+          {activeView === 'unit-econ'  && <UnitEconView />}
+          {activeView === 'scenarios'  && <ScenariosView />}
         </div>
+        <MethodologyFooter />
       </div>
-    </div>
+    </AppShell>
   );
 }

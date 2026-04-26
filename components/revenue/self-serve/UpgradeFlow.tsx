@@ -2,6 +2,7 @@
 
 import { useRevenue } from '@/lib/revenue/contexts';
 import { fmtCount } from '@/lib/revenue/format';
+import LegendSwatch from '../shared/LegendSwatch';
 
 const W = 560, H = 220;
 const padL = 48, padR = 56, padT = 16, padB = 28;
@@ -35,8 +36,8 @@ export default function UpgradeFlow() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
         <div className="hand" style={{ fontSize: 18 }}>Plus → Business upgrades</div>
         <div style={{ display: 'flex', gap: 12, fontSize: 11, color: 'var(--ink-3)' }}>
-          <Sw color="color-mix(in oklch, var(--accent-good) 50%, white)" border="var(--accent-good)" label="Upgrades / mo" />
-          <Sw color="var(--ink)" border="var(--ink)" label="Cumulative" line />
+          <LegendSwatch color="color-mix(in oklch, var(--accent-good) 50%, white)" border="var(--accent-good)" label="Upgrades / mo" />
+          <LegendSwatch shape="line" color="var(--ink)" label="Cumulative" />
         </div>
       </div>
       <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ display: 'block' }}>
@@ -88,17 +89,3 @@ export default function UpgradeFlow() {
   );
 }
 
-function Sw({ color, border, label, line }: { color: string; border: string; label: string; line?: boolean }) {
-  return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-      <span style={{
-        display: 'inline-block',
-        width: line ? 14 : 10,
-        height: line ? 2 : 10,
-        background: color,
-        border: line ? 'none' : `1px solid ${border}`,
-      }} />
-      <span>{label}</span>
-    </span>
-  );
-}

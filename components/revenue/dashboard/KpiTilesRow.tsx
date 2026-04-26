@@ -1,7 +1,7 @@
 'use client';
 
 import { useRevenue } from '@/lib/revenue/contexts';
-import { fmtMoneyScaled, fmtPlainPct, fmtCount, fmtNumberX } from '@/lib/revenue/format';
+import { fmtMoneyScaled, fmtPlainPct, fmtCount } from '@/lib/revenue/format';
 
 interface TileProps {
   label: string;
@@ -98,5 +98,3 @@ export default function KpiTilesRow() {
     </div>
   );
 }
-
-void fmtNumberX; // imported for future tile use

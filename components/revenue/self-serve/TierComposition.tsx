@@ -2,6 +2,7 @@
 
 import { useRevenue } from '@/lib/revenue/contexts';
 import { fmtCount, fmtMoneyScaled } from '@/lib/revenue/format';
+import LegendSwatch from '../shared/LegendSwatch';
 
 const W = 560, H = 240;
 const padL = 48, padR = 56, padT = 16, padB = 28;
@@ -41,9 +42,9 @@ export default function TierComposition() {
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'baseline', marginBottom: 6 }}>
         <div className="hand" style={{ fontSize: 18 }}>Tier composition · workspaces & ARR</div>
         <div style={{ display: 'flex', gap: 12, fontSize: 11, color: 'var(--ink-3)' }}>
-          <Sw color="color-mix(in oklch, var(--accent-cool) 35%, white)" border="var(--accent-cool)" label="Plus ws" />
-          <Sw color="color-mix(in oklch, var(--accent-good) 35%, white)" border="var(--accent-good)" label="Business ws" />
-          <Sw color="var(--ink)" border="var(--ink)" label="Self-serve ARR" line />
+          <LegendSwatch color="color-mix(in oklch, var(--accent-cool) 35%, white)" border="var(--accent-cool)" label="Plus ws" />
+          <LegendSwatch color="color-mix(in oklch, var(--accent-good) 35%, white)" border="var(--accent-good)" label="Business ws" />
+          <LegendSwatch shape="line" color="var(--ink)" label="Self-serve ARR" />
         </div>
       </div>
       <svg width="100%" viewBox={`0 0 ${W} ${H}`} style={{ display: 'block' }}>
@@ -93,17 +94,3 @@ export default function TierComposition() {
   );
 }
 
-function Sw({ color, border, label, line }: { color: string; border: string; label: string; line?: boolean }) {
-  return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 5 }}>
-      <span style={{
-        display: 'inline-block',
-        width: line ? 14 : 10,
-        height: line ? 2 : 10,
-        background: color,
-        border: line ? 'none' : `1px solid ${border}`,
-      }} />
-      <span>{label}</span>
-    </span>
-  );
-}
