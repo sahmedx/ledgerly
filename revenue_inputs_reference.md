@@ -99,14 +99,14 @@ Headcount build for 920: S&M (100 reps + 50 SDRs + 30 SEs + 13 mgrs + 90 mktg = 
 | `sm.flc.se` | $250k | |
 | `sm.flc.manager` | $400k | |
 | `sm.flc.mktg` | $250k | marketing FLC |
-| `sm.marketing_programs_pct_of_revenue` | 16% | non-headcount marketing spend (was 8%; doubled) |
+| `sm.marketing_programs_pct_of_revenue` | 16% | S&M non-HC expense (was 8%; doubled) |
 | `sm.marketing_hiring_plan` | 1/mo × 24 | mktg hire cadence |
 | `rd.hiring_plan` | 5/mo × 24 | engineer hire cadence |
 | `rd.flc_per_eng` | $400k | engineer FLC |
-| `rd.tooling_pct_of_revenue` | 2% | tooling/SaaS spend |
+| `rd.tooling_pct_of_revenue` | 4% | R&D non-HC expense (was 2%; doubled) |
 | `ga.hiring_plan` | 1/mo × 24 | G&A hire cadence |
 | `ga.flc_per_ga` | $250k | G&A FLC |
-| `ga.te_pct_of_revenue` | 4.5% | T&E (was 1.5%; tripled with G&A scale-up) |
+| `ga.te_pct_of_revenue` | 9.0% | G&A non-HC expense (was 1.5% → 4.5% with G&A 3× → 9% doubled here) |
 | `cs.csm_per_enterprise_logos` | 25 | 1 CSM per 25 ENT |
 | `cs.csm_per_business_large_logos` | 100 | 1 CSM per 100 BL |
 | `cs.flc_per_csm` | $200k | CSM FLC |

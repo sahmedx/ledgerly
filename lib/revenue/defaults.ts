@@ -131,12 +131,12 @@ export const DEFAULT_ASSUMPTIONS: Assumptions = {
     rd: {
       hiring_plan: Array.from({ length: 24 }, (_, i) => ({ month: i + 1, count: 5 })),
       flc_per_eng: 400_000,
-      tooling_pct_of_revenue: 0.02,
+      tooling_pct_of_revenue: 0.04,
     },
     ga: {
       hiring_plan: Array.from({ length: 24 }, (_, i) => ({ month: i + 1, count: 1 })),
       flc_per_ga: 250_000,
-      te_pct_of_revenue: 0.045,
+      te_pct_of_revenue: 0.090,
     },
     cs: {
       csm_per_enterprise_logos: 25,
