@@ -27,7 +27,8 @@ export function PnlProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const expandAll = useCallback(() => {
-    setExpandedQuarters(new Set([0, 1, 2, 3, 4, 5, 6, 7]));
+    // FY25 quarters (100..103) + FY26 + FY27 (0..7)
+    setExpandedQuarters(new Set([100, 101, 102, 103, 0, 1, 2, 3, 4, 5, 6, 7]));
   }, []);
 
   const collapseAll = useCallback(() => {

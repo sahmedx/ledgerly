@@ -2,6 +2,7 @@
 
 import { useRevenue } from '@/lib/revenue/contexts';
 import { fmtMoneyScaled, fmtPlainPct, fmtCount } from '@/lib/revenue/format';
+import { FY24_ENDING_ARR, FY25_ENDING_ARR } from '@/lib/revenue/historical';
 
 interface TileProps {
   label: string;
@@ -52,6 +53,10 @@ export default function KpiTilesRow() {
   const fy27EndingArr = r.annual[1].ending_arr;
   const fyArrGrowth = fy26EndingArr > 0 ? (fy27EndingArr - fy26EndingArr) / fy26EndingArr : null;
 
+  // 3-year decel context (FY25 actual → FY27 plan)
+  const fy25Yoy = (FY25_ENDING_ARR - FY24_ENDING_ARR) / FY24_ENDING_ARR;
+  const fy26Yoy = (fy26EndingArr - FY25_ENDING_ARR) / FY25_ENDING_ARR;
+
   const tiles: TileProps[] = [
     {
       label: 'Total ARR',
@@ -61,15 +66,17 @@ export default function KpiTilesRow() {
     {
       label: 'ARR YoY (FY27 / FY26)',
       value: fyArrGrowth === null ? '—' : fmtPlainPct(fyArrGrowth, 1),
-      sub: `${fmtMoneyScaled(fy26EndingArr, { precision: 1 })} → ${fmtMoneyScaled(fy27EndingArr, { precision: 1 })}`,
+      sub: `FY25 ${fmtPlainPct(fy25Yoy, 0)} · FY26 ${fmtPlainPct(fy26Yoy, 0)} · FY27 ${fyArrGrowth === null ? '—' : fmtPlainPct(fyArrGrowth, 0)}`,
     },
     {
-      label: 'NRR (TTM)',
+      label: 'NRR (TTM, sales-led)',
       value: fmtPlainPct(last.kpis.nrr_ttm, 1),
+      sub: 'self-serve excluded',
     },
     {
-      label: 'GRR (TTM)',
+      label: 'GRR (TTM, sales-led)',
       value: fmtPlainPct(last.kpis.grr_ttm, 1),
+      sub: 'self-serve excluded',
     },
     {
       label: 'Gross margin',
@@ -86,9 +93,9 @@ export default function KpiTilesRow() {
       sub: 'non-GAAP, ex-SBC',
     },
     {
-      label: 'Rule of 40',
+      label: 'Rule of 40 (GAAP)',
       value: last.kpis.rule_of_40 === null ? '—' : last.kpis.rule_of_40.toFixed(1),
-      sub: 'YoY growth + non-GAAP op margin',
+      sub: 'ARR YoY + GAAP op margin (TTM)',
     },
     {
       label: 'Total logos',
@@ -101,9 +108,9 @@ export default function KpiTilesRow() {
       sub: `SS ${fmtMoneyScaled(last.kpis.arpa_self_serve, { precision: 0 })} · SL ${fmtMoneyScaled(last.kpis.arpa_sales_led, { precision: 0 })}`,
     },
     {
-      label: 'AI-influenced ARR',
+      label: 'AI-included ARR',
       value: fmtMoneyScaled(last.total.ai_influenced_arr, { precision: 1 }),
-      sub: `${fmtPlainPct(last.total.ai_influenced_pct, 0)} of total`,
+      sub: `${fmtPlainPct(last.total.ai_influenced_pct, 0)} on plans bundling AI`,
     },
   ];
 

@@ -133,21 +133,41 @@ export function computeKpisInPlace(monthly: MonthlyResult[], A: Assumptions): vo
       if (net_new > 0) burn_multiple = op_loss / net_new;
     }
 
-    // ARR YoY growth + Rule of 40 (GAAP operating margin).
-    // For i >= 12, use true t-12 comparator. For i < 12 (FY26), annualize Day-0 →
-    // current growth via compound factor so 2026 quarters and FY26 are not blank.
+    // ARR YoY growth + Rule of 40 (GAAP, TTM).
+    // ARR YoY: t-12 comparator when available; otherwise annualize Day-0 → current.
+    // OM: TTM (sum of last 12 months of op income / total revenue) for i >= 11;
+    // otherwise YTD-annualized so early FY26 is not blank.
     let arr_yoy_growth: number | null = null;
     let rule_of_40: number | null = null;
+    let om_ttm_gaap: number | null = null;
+    if (i >= 11) {
+      let oi_sum = 0, rev_sum = 0;
+      for (let k = i - 11; k <= i; k++) {
+        oi_sum  += monthly[k].costs.operating_income;
+        rev_sum += monthly[k].total.revenue;
+      }
+      if (rev_sum > 0) om_ttm_gaap = oi_sum / rev_sum;
+    } else {
+      let oi_sum = 0, rev_sum = 0;
+      for (let k = 0; k <= i; k++) {
+        oi_sum  += monthly[k].costs.operating_income;
+        rev_sum += monthly[k].total.revenue;
+      }
+      if (rev_sum > 0) om_ttm_gaap = oi_sum / rev_sum;
+    }
+
     if (i >= 12) {
       const arr_yoy = totalArrFromMonthly(monthly[i - 12]);
       if (arr_yoy > 0) {
         arr_yoy_growth = (total_arr - arr_yoy) / arr_yoy;
-        rule_of_40 = (arr_yoy_growth + m.costs.operating_margin_gaap_pct) * 100;
       }
     } else if (day0_total_arr > 0) {
       const months_elapsed = i + 1; // 1..12
       arr_yoy_growth = Math.pow(total_arr / day0_total_arr, 12 / months_elapsed) - 1;
-      rule_of_40 = (arr_yoy_growth + m.costs.operating_margin_gaap_pct) * 100;
+    }
+
+    if (arr_yoy_growth !== null && om_ttm_gaap !== null) {
+      rule_of_40 = (arr_yoy_growth + om_ttm_gaap) * 100;
     }
 
     // CAC by segment
@@ -160,8 +180,12 @@ export function computeKpisInPlace(monthly: MonthlyResult[], A: Assumptions): vo
     const marketing_comp = m.headcount.marketing * flc.mktg / 12;
     const marketing_programs = Math.max(0, m.costs.sm_total - sales_comp - marketing_comp);
 
-    const ss_attributable_sm = marketing_programs + marketing_comp;
-    const sl_attributable_sm = sales_comp + marketing_programs * 0.30;
+    // Marketing programs + marketing comp split between segments. Default 70/30
+    // (PLG-heavy company); tunable per A.costs.sm.sl_marketing_attribution_pct.
+    const sl_mktg_share = A.costs.sm.sl_marketing_attribution_pct;
+    const ss_mktg_share = 1 - sl_mktg_share;
+    const ss_attributable_sm = (marketing_programs + marketing_comp) * ss_mktg_share;
+    const sl_attributable_sm = sales_comp + (marketing_programs + marketing_comp) * sl_mktg_share;
 
     const new_ss_logos = m.self_serve.new_paid_workspaces;
     const total_new_sl_arr =

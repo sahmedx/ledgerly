@@ -109,6 +109,9 @@ export interface Assumptions {
       flc: { rep: number; sdr: number; se: number; manager: number; mktg: number };
       marketing_programs_pct_of_revenue: number;
       marketing_hiring_plan: HiringPlanEntry[];
+      /** Share of marketing programs + marketing comp attributed to sales-led CAC.
+       *  Remainder (1 - this) flows to self-serve CAC. */
+      sl_marketing_attribution_pct: number;
     };
     rd: {
       hiring_plan: HiringPlanEntry[];

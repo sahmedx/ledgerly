@@ -7,6 +7,7 @@
 
 import type { MonthlyResult, PeriodResult } from '@/lib/revenue/types';
 import { monthAsPeriod } from '@/lib/revenue/engine-rollups';
+import { FY25_QUARTERLY, FY25_MONTHLY, FY25_ANNUAL } from '@/lib/revenue/historical';
 
 export type ColKind = 'quarter' | 'month' | 'annual';
 
@@ -28,6 +29,15 @@ const QUARTER_LABELS = [
 
 const ANNUAL_LABELS = ["FY26", "FY27"];
 
+// FY25 historical: qIndex 100..103 (namespace separated from FY26/27 0..7)
+const FY25_QLABEL = ["Q1 '25", "Q2 '25", "Q3 '25", "Q4 '25"];
+const FY25_MLABEL = [
+  'Jan 25', 'Feb 25', 'Mar 25',
+  'Apr 25', 'May 25', 'Jun 25',
+  'Jul 25', 'Aug 25', 'Sep 25',
+  'Oct 25', 'Nov 25', 'Dec 25',
+];
+
 export function buildColumns(
   quarterly: PeriodResult[],
   annual: PeriodResult[],
@@ -35,6 +45,33 @@ export function buildColumns(
   expanded: Set<number>,
 ): Column[] {
   const cols: Column[] = [];
+
+  // ---------- FY25 historical (prepended) ----------
+  for (let q = 0; q < 4; q++) {
+    const qIdx = 100 + q;
+    cols.push({
+      key: `q25_${q}`,
+      label: FY25_QLABEL[q],
+      kind: 'quarter',
+      period: FY25_QUARTERLY[q],
+      qIndex: qIdx,
+    });
+    if (expanded.has(qIdx)) {
+      for (let m = 0; m < 3; m++) {
+        const mIdx = q * 3 + m;
+        cols.push({
+          key: `m25_${mIdx}`,
+          label: FY25_MLABEL[mIdx],
+          kind: 'month',
+          period: FY25_MONTHLY[mIdx],
+          parentQ: qIdx,
+        });
+      }
+    }
+  }
+  cols.push({ key: 'fy25', label: 'FY25', kind: 'annual', period: FY25_ANNUAL });
+
+  // ---------- FY26 + FY27 (engine output) ----------
   for (let q = 0; q < 8; q++) {
     const quarter = quarterly[q];
     cols.push({

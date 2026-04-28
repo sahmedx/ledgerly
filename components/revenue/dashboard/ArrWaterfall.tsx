@@ -3,7 +3,7 @@
 import { useRevenue } from '@/lib/revenue/contexts';
 import { fmtMoneyScaled } from '@/lib/revenue/format';
 
-const END_IDX = 17;    // end of month 18 (Jun 27) — final forecast month
+const END_IDX = 11;    // end of month 12 (Dec 26) — FY26 close
 
 interface Step {
   label: string;
@@ -37,7 +37,7 @@ export default function ArrWaterfall() {
   const ending = endMonth.total.arr;
 
   const steps: Step[] = [
-    { label: 'Starting ARR · Dec 25',                       value: starting,     kind: 'total' },
+    { label: 'FY25 ending ARR · Dec 25',                    value: starting,     kind: 'total' },
     { label: 'Δ Self-Serve (net)',                          value: dSs,          kind: dSs >= 0 ? 'pos' : 'neg' },
     { label: 'New Sales-Led · named pipeline',              value: new_named,    kind: 'pos' },
     { label: 'New Sales-Led · capacity',                    value: new_capacity, kind: 'pos' },
@@ -72,7 +72,7 @@ export default function ArrWaterfall() {
   return (
     <div className="sketch-box" style={{ padding: '14px 18px' }}>
       <div className="hand" style={{ fontSize: 18, marginBottom: 8 }}>
-        ARR Waterfall · Dec 25 → Jun 27
+        ARR Waterfall · Dec 25 → Dec 26
       </div>
       <svg width="100%" viewBox={`0 0 ${totalW} ${steps.length * rowH + 8}`} style={{ display: 'block' }}>
         {steps.map((step, i) => {

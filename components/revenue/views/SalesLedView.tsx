@@ -163,6 +163,17 @@ function SalesLedDrivers() {
         />
       </DrawerSection>
 
+      <DrawerSection title="CAC attribution">
+        <DriverInput
+          path="costs.sm.sl_marketing_attribution_pct"
+          label="Marketing share → sales-led CAC"
+          unit="%"
+          min={0} max={100} step={1}
+          defaultValue={0.30}
+          hint="Default 30% — PLG-heavy: most marketing spend funds self-serve. Remainder flows to SS CAC."
+        />
+      </DrawerSection>
+
       <DrawerSection title="Existing dynamics · Biz large">
         <DriverInput
           path="sales_led.existing_customer_dynamics.business_large.gross_churn"

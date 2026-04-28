@@ -112,8 +112,8 @@ export const DEFAULT_ASSUMPTIONS: Assumptions = {
     },
     win_rate: 0.30,
     existing_customer_dynamics: {
-      business_large: { gross_churn: 0.005, contraction: 0.003, expansion: 0.015 },
-      enterprise:     { gross_churn: 0.002, contraction: 0.004, expansion: 0.020 },
+      business_large: { gross_churn: 0.006, contraction: 0.003, expansion: 0.015 },
+      enterprise:     { gross_churn: 0.004, contraction: 0.004, expansion: 0.020 },
     },
     legacy_anniversary_distribution: [
       0.10, 0, 0, 0.10, 0, 0, 0.10, 0, 0, 0.70, 0, 0,
@@ -127,6 +127,7 @@ export const DEFAULT_ASSUMPTIONS: Assumptions = {
       flc: { rep: 300_000, sdr: 150_000, se: 250_000, manager: 400_000, mktg: 250_000 },
       marketing_programs_pct_of_revenue: 0.16,
       marketing_hiring_plan: Array.from({ length: 24 }, (_, i) => ({ month: i + 1, count: 2 })),
+      sl_marketing_attribution_pct: 0.30,
     },
     rd: {
       hiring_plan: Array.from({ length: 24 }, (_, i) => ({ month: i + 1, count: 7 })),

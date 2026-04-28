@@ -23,7 +23,7 @@ export default function ConsolidatedView() {
     <div style={{ padding: '14px 18px 24px', display: 'flex', flexDirection: 'column', gap: 10 }}>
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
         <div className="hand" style={{ fontSize: 16 }}>
-          Consolidated P&L · 8 quarters + FY26 / FY27
+          Consolidated P&L · FY25 actual + 8 quarters of FY26 / FY27 plan
         </div>
         <ExpandToggle />
       </div>

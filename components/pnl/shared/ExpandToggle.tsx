@@ -4,7 +4,7 @@ import { usePnl } from '../PnlContext';
 
 export default function ExpandToggle() {
   const { expandedQuarters, expandAll, collapseAll } = usePnl();
-  const allExpanded = expandedQuarters.size === 8;
+  const allExpanded = expandedQuarters.size === 12;
   return (
     <div style={{ display: 'flex', gap: 6, alignItems: 'center', fontSize: 12 }}>
       <span style={{ color: 'var(--ink-3)' }}>Quarters:</span>

@@ -9,7 +9,6 @@ import ConversionFunnel from '../self-serve/ConversionFunnel';
 import CohortHeatmap from '../self-serve/CohortHeatmap';
 import TierComposition from '../self-serve/TierComposition';
 import UpgradeFlow from '../self-serve/UpgradeFlow';
-import SeatExpansionChart from '../self-serve/SeatExpansionChart';
 
 export default function SelfServeView() {
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -33,8 +32,6 @@ export default function SelfServeView() {
         <TierComposition />
         <UpgradeFlow />
       </div>
-
-      <SeatExpansionChart />
 
       <CohortHeatmap />
 
