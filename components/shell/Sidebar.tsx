@@ -8,8 +8,8 @@ interface Props {
 }
 
 const MODULES: { id: ModuleId; label: string; icon: string }[] = [
-  { id: 'expenses', label: 'Expenses', icon: '▦' },
   { id: 'revenue',  label: 'Revenue',  icon: '◭' },
+  { id: 'expenses', label: 'Expenses', icon: '▦' },
   { id: 'pnl',      label: 'P&L',      icon: '⊟' },
 ];
 

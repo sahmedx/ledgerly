@@ -44,7 +44,7 @@ const EXPENSE_ACTIONS: Record<string, React.ReactNode> = {
 };
 
 export default function Page() {
-  const [module, setModule] = useState<ModuleId>('expenses');
+  const [module, setModule] = useState<ModuleId>('revenue');
   const [expenseView, setExpenseView] = useState<string>('grid');
   const [revenueView, setRevenueView] = useState<string>('dashboard');
   const [pnlView, setPnlView] = useState<string>('consolidated');
