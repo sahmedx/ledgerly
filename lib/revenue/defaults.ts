@@ -11,23 +11,23 @@ const RAMP_CURVE_12 = [
 ];
 
 const SEED_PIPELINE: PipelineDeal[] = [
-  { id: 'd1',  company: 'Northwind Co.',     stage: 'commit',     acv: 480_000, expected_close_month: 1, segment: 'business_large' },
-  { id: 'd2',  company: 'Acme Industries',   stage: 'proposal',   acv: 320_000, expected_close_month: 1, segment: 'business_large' },
-  { id: 'd3',  company: 'Vega Aerospace',    stage: 'commit',     acv: 1_200_000, expected_close_month: 2, segment: 'enterprise' },
-  { id: 'd4',  company: 'Holberton Bank',    stage: 'proposal',   acv: 850_000, expected_close_month: 2, segment: 'enterprise' },
-  { id: 'd5',  company: 'Marlin Studios',    stage: 'discovery',  acv: 240_000, expected_close_month: 2, segment: 'business_large' },
-  { id: 'd6',  company: 'Stratus Health',    stage: 'commit',     acv: 1_800_000, expected_close_month: 3, segment: 'enterprise' },
-  { id: 'd7',  company: 'Pemberton Foods',   stage: 'proposal',   acv: 410_000, expected_close_month: 3, segment: 'business_large' },
-  { id: 'd8',  company: 'Larkspur Media',    stage: 'discovery',  acv: 280_000, expected_close_month: 3, segment: 'business_large' },
-  { id: 'd9',  company: 'Apex Logistics',    stage: 'qualified',  acv: 600_000, expected_close_month: 4, segment: 'enterprise' },
-  { id: 'd10', company: 'Crestwood Inc.',    stage: 'proposal',   acv: 360_000, expected_close_month: 4, segment: 'business_large' },
-  { id: 'd11', company: 'Grand Valley',      stage: 'commit',     acv: 920_000, expected_close_month: 4, segment: 'enterprise' },
-  { id: 'd12', company: 'Trident Robotics',  stage: 'discovery',  acv: 500_000, expected_close_month: 5, segment: 'enterprise' },
-  { id: 'd13', company: 'Halcyon Group',     stage: 'proposal',   acv: 290_000, expected_close_month: 5, segment: 'business_large' },
-  { id: 'd14', company: 'Quill & Ledger',    stage: 'qualified',  acv: 220_000, expected_close_month: 5, segment: 'business_large' },
-  { id: 'd15', company: 'Solace Health',     stage: 'commit',     acv: 1_400_000, expected_close_month: 6, segment: 'enterprise' },
-  { id: 'd16', company: 'Brindle Apparel',   stage: 'proposal',   acv: 340_000, expected_close_month: 6, segment: 'business_large' },
-  { id: 'd17', company: 'Foster Manufacturing', stage: 'discovery', acv: 410_000, expected_close_month: 6, segment: 'business_large' },
+  { id: 'd1',  company: 'Northwind Co.',        stage: 'commit',    acv: 480_000,   expected_close_month: 1, segment: 'business_large' },
+  { id: 'd2',  company: 'Acme Industries',       stage: 'proposal',  acv: 320_000,   expected_close_month: 1, segment: 'business_large' },
+  { id: 'd3',  company: 'Vega Aerospace',        stage: 'commit',    acv: 1_800_000, expected_close_month: 2, segment: 'enterprise' },
+  { id: 'd4',  company: 'Holberton Bank',        stage: 'proposal',  acv: 1_200_000, expected_close_month: 2, segment: 'enterprise' },
+  { id: 'd5',  company: 'Marlin Studios',        stage: 'discovery', acv: 700_000,   expected_close_month: 2, segment: 'enterprise' },
+  { id: 'd6',  company: 'Stratus Health',        stage: 'commit',    acv: 2_500_000, expected_close_month: 3, segment: 'enterprise' },
+  { id: 'd7',  company: 'Pemberton Foods',       stage: 'proposal',  acv: 410_000,   expected_close_month: 3, segment: 'business_large' },
+  { id: 'd8',  company: 'Larkspur Media',        stage: 'discovery', acv: 600_000,   expected_close_month: 3, segment: 'enterprise' },
+  { id: 'd9',  company: 'Apex Logistics',        stage: 'qualified', acv: 950_000,   expected_close_month: 4, segment: 'enterprise' },
+  { id: 'd10', company: 'Crestwood Inc.',        stage: 'proposal',  acv: 360_000,   expected_close_month: 4, segment: 'business_large' },
+  { id: 'd11', company: 'Grand Valley',          stage: 'commit',    acv: 1_500_000, expected_close_month: 4, segment: 'enterprise' },
+  { id: 'd12', company: 'Trident Robotics',      stage: 'discovery', acv: 850_000,   expected_close_month: 5, segment: 'enterprise' },
+  { id: 'd13', company: 'Halcyon Group',         stage: 'proposal',  acv: 850_000,   expected_close_month: 5, segment: 'enterprise' },
+  { id: 'd14', company: 'Quill & Ledger',        stage: 'qualified', acv: 220_000,   expected_close_month: 5, segment: 'business_large' },
+  { id: 'd15', company: 'Solace Health',         stage: 'commit',    acv: 2_200_000, expected_close_month: 6, segment: 'enterprise' },
+  { id: 'd16', company: 'Brindle Apparel',       stage: 'proposal',  acv: 950_000,   expected_close_month: 6, segment: 'enterprise' },
+  { id: 'd17', company: 'Foster Manufacturing',  stage: 'discovery', acv: 410_000,   expected_close_month: 6, segment: 'business_large' },
 ];
 
 const BASE_SHOCKS: ScenarioShocks = {
@@ -66,13 +66,13 @@ const DOWNSIDE_SHOCKS: ScenarioShocks = {
 export const DEFAULT_ASSUMPTIONS: Assumptions = {
   starting_state: { ...STARTING_STATE },
   self_serve: {
-    free_pool_monthly_growth: 0.015,
-    free_to_paid_rate: 0.00025,
+    free_pool_monthly_growth: 0.008,
+    free_to_paid_rate: 0.00015,
     tier_mix_on_conversion: { plus: 0.80, business_small: 0.20 },
     initial_seats_per_workspace: { plus: 4, business_small: 12 },
     legacy_seats_per_workspace: { plus: 4, business_small: 12 },
-    monthly_seat_growth_rate: { plus: 0.005, business_small: 0.010 },
-    plus_to_business_upgrade_rate: 0.010,
+    monthly_seat_growth_rate: { plus: 0.003, business_small: 0.006 },
+    plus_to_business_upgrade_rate: 0.004,
     retention: {
       plus:                   { floor: 0.55, decay: 0.20 },
       business_small:         { floor: 0.70, decay: 0.10 },
@@ -90,9 +90,9 @@ export const DEFAULT_ASSUMPTIONS: Assumptions = {
   sales_led: {
     avg_seats_per_logo: { business_large: 100, enterprise: 500 },
     blended_seat_price: { business_large: 20, enterprise: 25 },
-    enterprise_avg_acv: 150_000,
+    enterprise_avg_acv: 200_000,
     named_pipeline: SEED_PIPELINE,
-    named_pipeline_weighted_acv: 40_000_000,
+    named_pipeline_weighted_acv: 65_000_000,
     stage_probability: {
       qualified: 0.10,
       discovery: 0.25,
@@ -101,11 +101,11 @@ export const DEFAULT_ASSUMPTIONS: Assumptions = {
     },
     pipeline_taper_start_month: 4,
     pipeline_taper_end_month: 9,
-    capacity_segment_split: { business_large: 0.50, enterprise: 0.50 },
+    capacity_segment_split: { business_large: 0.25, enterprise: 0.75 },
     sales_capacity: {
-      hiring_plan: Array.from({ length: 24 }, (_, i) => ({ month: i + 1, count: 6 })),
+      hiring_plan: Array.from({ length: 24 }, (_, i) => ({ month: i + 1, count: 10 })),
       ramp_curve: RAMP_CURVE_12,
-      fully_ramped_quota_annual: 1_200_000,
+      fully_ramped_quota_annual: 1_500_000,
       attainment: 0.80,
       monthly_attrition_rate: 0.015,
       replacement_lag_months: 2,
@@ -113,7 +113,7 @@ export const DEFAULT_ASSUMPTIONS: Assumptions = {
     win_rate: 0.30,
     existing_customer_dynamics: {
       business_large: { gross_churn: 0.006, contraction: 0.003, expansion: 0.015 },
-      enterprise:     { gross_churn: 0.004, contraction: 0.004, expansion: 0.020 },
+      enterprise:     { gross_churn: 0.004, contraction: 0.003, expansion: 0.025 },
     },
     legacy_anniversary_distribution: [
       0.10, 0, 0, 0.10, 0, 0, 0.10, 0, 0, 0.70, 0, 0,

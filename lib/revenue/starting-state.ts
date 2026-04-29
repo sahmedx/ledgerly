@@ -1,10 +1,10 @@
 /* Day-0 (Dec 2025) snapshot — V2 calibration. */
 
 export const STARTING_STATE = {
-  self_serve_arr: { plus: 170_000_000, business_small: 140_000_000 },
-  sales_led_arr:  { business_large: 115_000_000, enterprise: 175_000_000 },
-  workspaces:     { plus: 354_000, business_small: 48_600 },
-  logos:          { business_large: 4_800, enterprise: 1_167 },
+  self_serve_arr: { plus: 130_000_000, business_small: 100_000_000 },
+  sales_led_arr:  { business_large: 145_000_000, enterprise: 225_000_000 },
+  workspaces:     { plus: 271_000, business_small: 34_700 },
+  logos:          { business_large: 6_050, enterprise: 1_500 },
   free_users:     90_000_000,
   total_headcount: 1100,
   quota_reps:      100,
