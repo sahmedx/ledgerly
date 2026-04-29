@@ -7,6 +7,7 @@ import CohortDecay from '../unit-econ/CohortDecay';
 import CacComposition from '../unit-econ/CacComposition';
 import MagicNumberTrend from '../unit-econ/MagicNumberTrend';
 import BurnMultipleTrend from '../unit-econ/BurnMultipleTrend';
+import SalesLedReadout from '../unit-econ/SalesLedReadout';
 
 export default function UnitEconView() {
   return (
@@ -20,6 +21,7 @@ export default function UnitEconView() {
         <MagicNumberTrend />
         <BurnMultipleTrend />
       </div>
+      <SalesLedReadout />
     </div>
   );
 }

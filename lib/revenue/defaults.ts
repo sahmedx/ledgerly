@@ -67,15 +67,15 @@ export const DEFAULT_ASSUMPTIONS: Assumptions = {
   starting_state: { ...STARTING_STATE },
   self_serve: {
     free_pool_monthly_growth: 0.008,
-    free_to_paid_rate: 0.00015,
-    tier_mix_on_conversion: { plus: 0.80, business_small: 0.20 },
+    free_to_paid_rate: 0.00020,
+    tier_mix_on_conversion: { plus: 0.60, business_small: 0.40 },
     initial_seats_per_workspace: { plus: 4, business_small: 12 },
     legacy_seats_per_workspace: { plus: 4, business_small: 12 },
-    monthly_seat_growth_rate: { plus: 0.003, business_small: 0.006 },
+    monthly_seat_growth_rate: { plus: 0.003, business_small: 0.008 },
     plus_to_business_upgrade_rate: 0.004,
     retention: {
-      plus:                   { floor: 0.55, decay: 0.20 },
-      business_small:         { floor: 0.70, decay: 0.10 },
+      plus:                   { floor: 0.68, decay: 0.18 },
+      business_small:         { floor: 0.88, decay: 0.05 },
       legacy_plus:            { floor: 0.65, decay: 0.08 },
       legacy_business_small:  { floor: 0.85, decay: 0.05 },
     },
@@ -89,7 +89,7 @@ export const DEFAULT_ASSUMPTIONS: Assumptions = {
   },
   sales_led: {
     avg_seats_per_logo: { business_large: 100, enterprise: 500 },
-    blended_seat_price: { business_large: 20, enterprise: 25 },
+    blended_seat_price: { business_large: 25, enterprise: 25 },
     enterprise_avg_acv: 200_000,
     named_pipeline: SEED_PIPELINE,
     named_pipeline_weighted_acv: 65_000_000,
@@ -110,7 +110,7 @@ export const DEFAULT_ASSUMPTIONS: Assumptions = {
       monthly_attrition_rate: 0.015,
       replacement_lag_months: 2,
     },
-    win_rate: 0.30,
+    win_rate: 0.38,
     existing_customer_dynamics: {
       business_large: { gross_churn: 0.006, contraction: 0.003, expansion: 0.015 },
       enterprise:     { gross_churn: 0.004, contraction: 0.003, expansion: 0.025 },
@@ -121,13 +121,13 @@ export const DEFAULT_ASSUMPTIONS: Assumptions = {
   },
   costs: {
     sm: {
-      sdr_ratio: 0.5,
-      se_ratio: 0.3,
-      reps_per_manager: 8,
+      sdr_ratio: 0.35,
+      se_ratio: 0.20,
+      reps_per_manager: 10,
       flc: { rep: 300_000, sdr: 150_000, se: 250_000, manager: 400_000, mktg: 250_000 },
-      marketing_programs_pct_of_revenue: 0.16,
+      marketing_programs_pct_of_revenue: 0.14,
       marketing_hiring_plan: Array.from({ length: 24 }, (_, i) => ({ month: i + 1, count: 2 })),
-      sl_marketing_attribution_pct: 0.30,
+      sl_marketing_attribution_pct: 0.18,
     },
     rd: {
       hiring_plan: Array.from({ length: 24 }, (_, i) => ({ month: i + 1, count: 7 })),
