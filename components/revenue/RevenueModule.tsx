@@ -21,7 +21,7 @@ const VIEWS: ViewTab[] = [
 ];
 
 const VIEW_TITLES: Record<string, string> = {
-  'dashboard':  'Revenue · FY26 + FY27 H1',
+  'dashboard':  'Revenue · FY26 plan + FY27 outlook',
   'self-serve': 'Self-Serve Engine',
   'sales-led':  'Sales-Led Engine',
   'unit-econ':  'Unit Economics',
@@ -42,7 +42,7 @@ export default function RevenueModule({ module, onModuleChange, activeView, onVi
   const meta: AppShellMeta = {
     breadcrumbSuffix: 'FY26 Plan · Revenue',
     title: VIEW_TITLES[activeView] ?? 'Revenue',
-    subtitle: `Ending ARR ${fmtMoneyScaled(r.ending_arr, { precision: 1 })} · ${activeScenario} scenario`,
+    subtitle: `FY26 ending ARR ${fmtMoneyScaled(r.annual[0].ending_arr, { precision: 1 })} · ${activeScenario} scenario`,
     actions: (
       <div style={{ display: 'flex', gap: 8, alignItems: 'center' }}>
         <ScenarioToggle />

@@ -62,22 +62,23 @@ function ltvCacTone(x: number): TileProps['tone'] {
 export default function UeKpiTiles() {
   const { results, activeScenario, assumptions } = useRevenue();
   const r = results[activeScenario];
-  const last: MonthlyResult = r.monthly[r.monthly.length - 1];
+  // Snapshot at end of FY26 (Dec 26). FY27 is outlook; the trend charts below cover the full horizon.
+  const dec26: MonthlyResult = r.monthly[11];
 
   const sl_churn_monthly = (
     assumptions.sales_led.existing_customer_dynamics.business_large.gross_churn
     + assumptions.sales_led.existing_customer_dynamics.enterprise.gross_churn
   ) / 2;
   const ss_churn_monthly = blendedSelfServeChurn(
-    assumptions, last.self_serve.arr.plus, last.self_serve.arr.business_small,
+    assumptions, dec26.self_serve.arr.plus, dec26.self_serve.arr.business_small,
   );
 
-  const gm = last.costs.gross_margin_pct;
-  const ssArpa = last.kpis.arpa_self_serve;
-  const slArpa = last.kpis.arpa_sales_led;
+  const gm = dec26.costs.gross_margin_pct;
+  const ssArpa = dec26.kpis.arpa_self_serve;
+  const slArpa = dec26.kpis.arpa_sales_led;
 
-  const ssCac = deriveCac(last.kpis.cac_payback_self_serve, ssArpa, gm);
-  const slCac = deriveCac(last.kpis.cac_payback_sales_led, slArpa, gm);
+  const ssCac = deriveCac(dec26.kpis.cac_payback_self_serve, ssArpa, gm);
+  const slCac = deriveCac(dec26.kpis.cac_payback_sales_led, slArpa, gm);
   const ssLtv = cappedLtv(ssArpa, gm, ss_churn_monthly);
   const slLtv = cappedLtv(slArpa, gm, sl_churn_monthly);
 
@@ -87,15 +88,17 @@ export default function UeKpiTiles() {
     return `${churnPct}% mo. churn · ${life.toFixed(0)}mo cap`;
   };
 
+  const slMktgPct = assumptions.costs.sm.sl_marketing_attribution_pct;
+  const ssMktgPct = 1 - slMktgPct;
   const tiles: TileProps[] = [
-    { label: 'CAC · self-serve',  value: fmtMoneyScaled(ssCac, { precision: 0 }), sub: 'attribution: marketing' },
-    { label: 'CAC · sales-led',   value: fmtMoneyScaled(slCac, { precision: 0 }), sub: 'sales + 30% mktg' },
+    { label: 'CAC · self-serve',  value: fmtMoneyScaled(ssCac, { precision: 0 }), sub: `Dec 26 · ${(ssMktgPct*100).toFixed(0)}% of mktg` },
+    { label: 'CAC · sales-led',   value: fmtMoneyScaled(slCac, { precision: 0 }), sub: `Dec 26 · sales + ${(slMktgPct*100).toFixed(0)}% mktg` },
     { label: 'LTV · self-serve',  value: fmtMoneyScaled(ssLtv, { precision: 0 }), sub: ltvSub(ss_churn_monthly) },
     { label: 'LTV · sales-led',   value: fmtMoneyScaled(slLtv, { precision: 0 }), sub: ltvSub(sl_churn_monthly) },
-    { label: 'LTV/CAC · SS',      value: fmtNumberX(last.kpis.ltv_cac_self_serve, 1), tone: ltvCacTone(last.kpis.ltv_cac_self_serve) },
-    { label: 'LTV/CAC · SL',      value: fmtNumberX(last.kpis.ltv_cac_sales_led, 1),  tone: ltvCacTone(last.kpis.ltv_cac_sales_led) },
-    { label: 'Payback · SS',      value: `${last.kpis.cac_payback_self_serve.toFixed(1)} mo`, tone: paybackTone(last.kpis.cac_payback_self_serve) },
-    { label: 'Payback · SL',      value: `${last.kpis.cac_payback_sales_led.toFixed(1)} mo`,  tone: paybackTone(last.kpis.cac_payback_sales_led) },
+    { label: 'LTV/CAC · SS',      value: fmtNumberX(dec26.kpis.ltv_cac_self_serve, 1), tone: ltvCacTone(dec26.kpis.ltv_cac_self_serve), sub: 'Dec 26' },
+    { label: 'LTV/CAC · SL',      value: fmtNumberX(dec26.kpis.ltv_cac_sales_led, 1),  tone: ltvCacTone(dec26.kpis.ltv_cac_sales_led), sub: 'Dec 26' },
+    { label: 'Payback · SS',      value: `${dec26.kpis.cac_payback_self_serve.toFixed(1)} mo`, tone: paybackTone(dec26.kpis.cac_payback_self_serve), sub: 'Dec 26' },
+    { label: 'Payback · SL',      value: `${dec26.kpis.cac_payback_sales_led.toFixed(1)} mo`,  tone: paybackTone(dec26.kpis.cac_payback_sales_led), sub: 'Dec 26' },
   ];
 
   return (

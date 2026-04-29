@@ -437,6 +437,7 @@ function rollupSegmentPeriod(
     ending_grr_ttm: last.kpis.grr_ttm,
     arr_yoy_growth: last.kpis.arr_yoy_growth,
     rule_of_40: last.kpis.rule_of_40,
+    rule_of_40_non_gaap: last.kpis.rule_of_40_non_gaap,
   };
 }
 

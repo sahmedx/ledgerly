@@ -168,6 +168,8 @@ export const CONSOLIDATED_LINES: LineItem[] = [
     accessor: p => p.arr_yoy_growth },
   { id: 'rule_40', label: 'Rule of 40 (GAAP)', indent: 1, style: 'kpi', kind: 'rule40',
     accessor: p => p.rule_of_40 },
+  { id: 'rule_40_ng', label: 'Rule of 40 (non-GAAP)', indent: 1, style: 'kpi', kind: 'rule40',
+    accessor: p => p.rule_of_40_non_gaap },
   { id: 'nrr', label: 'NRR (TTM)', indent: 1, style: 'kpi', kind: 'pct',
     accessor: p => p.ending_nrr_ttm },
   { id: 'grr', label: 'GRR (TTM)', indent: 1, style: 'kpi', kind: 'pct',

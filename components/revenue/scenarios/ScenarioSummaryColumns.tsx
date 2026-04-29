@@ -38,7 +38,7 @@ export default function ScenarioSummaryColumns() {
 
   return (
     <div className="sketch-box" style={{ padding: '14px 18px' }}>
-      <div className="hand" style={{ fontSize: 18, marginBottom: 8 }}>Scenario summary · endpoint metrics</div>
+      <div className="hand" style={{ fontSize: 18, marginBottom: 8 }}>Scenario summary · Dec 27 endpoint (full horizon)</div>
 
       <div style={{
         display: 'grid',

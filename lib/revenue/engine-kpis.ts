@@ -139,21 +139,23 @@ export function computeKpisInPlace(monthly: MonthlyResult[], A: Assumptions): vo
     // otherwise YTD-annualized so early FY26 is not blank.
     let arr_yoy_growth: number | null = null;
     let rule_of_40: number | null = null;
+    let rule_of_40_non_gaap: number | null = null;
     let om_ttm_gaap: number | null = null;
-    if (i >= 11) {
-      let oi_sum = 0, rev_sum = 0;
-      for (let k = i - 11; k <= i; k++) {
-        oi_sum  += monthly[k].costs.operating_income;
+    let om_ttm_non_gaap: number | null = null;
+    {
+      const start = i >= 11 ? i - 11 : 0;
+      let oi_sum = 0, oi_ng_sum = 0, sbc_sum = 0, rev_sum = 0;
+      for (let k = start; k <= i; k++) {
+        const c = monthly[k].costs;
+        oi_sum  += c.operating_income;
+        sbc_sum += c.total_sbc;
         rev_sum += monthly[k].total.revenue;
       }
-      if (rev_sum > 0) om_ttm_gaap = oi_sum / rev_sum;
-    } else {
-      let oi_sum = 0, rev_sum = 0;
-      for (let k = 0; k <= i; k++) {
-        oi_sum  += monthly[k].costs.operating_income;
-        rev_sum += monthly[k].total.revenue;
+      oi_ng_sum = oi_sum + sbc_sum;
+      if (rev_sum > 0) {
+        om_ttm_gaap = oi_sum / rev_sum;
+        om_ttm_non_gaap = oi_ng_sum / rev_sum;
       }
-      if (rev_sum > 0) om_ttm_gaap = oi_sum / rev_sum;
     }
 
     if (i >= 12) {
@@ -168,6 +170,9 @@ export function computeKpisInPlace(monthly: MonthlyResult[], A: Assumptions): vo
 
     if (arr_yoy_growth !== null && om_ttm_gaap !== null) {
       rule_of_40 = (arr_yoy_growth + om_ttm_gaap) * 100;
+    }
+    if (arr_yoy_growth !== null && om_ttm_non_gaap !== null) {
+      rule_of_40_non_gaap = (arr_yoy_growth + om_ttm_non_gaap) * 100;
     }
 
     // CAC by segment
@@ -217,6 +222,7 @@ export function computeKpisInPlace(monthly: MonthlyResult[], A: Assumptions): vo
       magic_number,
       burn_multiple,
       rule_of_40,
+      rule_of_40_non_gaap,
       arr_yoy_growth,
       cac_payback_self_serve: ss_payback,
       cac_payback_sales_led: sl_payback,

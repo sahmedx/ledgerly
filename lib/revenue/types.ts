@@ -280,8 +280,10 @@ export interface MonthlyKpis {
   grr_ttm: number;
   magic_number: number;
   burn_multiple: number;
-  /** Rule of 40 = YoY ARR growth + non-GAAP operating margin. Null for t < 13 (no t-12 ARR). */
+  /** Rule of 40 (GAAP) = YoY ARR growth + TTM GAAP operating margin (×100). */
   rule_of_40: number | null;
+  /** Rule of 40 (non-GAAP, ex-SBC) = YoY ARR growth + TTM non-GAAP operating margin (×100). */
+  rule_of_40_non_gaap: number | null;
   /** YoY ARR growth = (arr[t] - arr[t-12]) / arr[t-12]. Null for t < 13. */
   arr_yoy_growth: number | null;
   cac_payback_self_serve: number;
@@ -386,8 +388,10 @@ export interface PeriodResult {
   ending_grr_ttm: number;
   /** YoY ARR growth at period end. Null when t < 13 (no prior-year comparator). */
   arr_yoy_growth: number | null;
-  /** Rule of 40 at period end (non-GAAP). Null when t < 13. */
+  /** Rule of 40 (GAAP) at period end. Null when t < 13. */
   rule_of_40: number | null;
+  /** Rule of 40 (non-GAAP, ex-SBC) at period end. Null when t < 13. */
+  rule_of_40_non_gaap: number | null;
 }
 
 export interface Results {

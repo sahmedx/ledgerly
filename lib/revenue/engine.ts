@@ -17,6 +17,7 @@ const MONTHS = 24;
 const ZERO_KPIS = {
   nrr_ttm: 0, grr_ttm: 0, magic_number: 0, burn_multiple: 0,
   rule_of_40: null as number | null,
+  rule_of_40_non_gaap: null as number | null,
   arr_yoy_growth: null as number | null,
   cac_payback_self_serve: 0, cac_payback_sales_led: 0,
   ltv_cac_self_serve: 0, ltv_cac_sales_led: 0,

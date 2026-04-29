@@ -6,7 +6,8 @@ import { fmtMoneyScaled } from '@/lib/revenue/format';
 export default function IpoValuationWalk() {
   const { results, activeScenario, assumptions } = useRevenue();
   const r = results[activeScenario];
-  const ending = r.ending_arr;
+  // FY26 ending ARR (Dec 26) — the planning-horizon endpoint.
+  const ending = r.annual[0].ending_arr;
   const m = assumptions.ipo_multiples;
 
   const tiers = [
@@ -21,7 +22,7 @@ export default function IpoValuationWalk() {
         Implied IPO valuation · {fmtMoneyScaled(ending, { precision: 1 })} ARR
       </div>
       <div style={{ fontSize: 12, color: 'var(--ink-3)', marginBottom: 12 }}>
-        Forward ARR × public-SaaS multiple, end-of-FY27-H1 simulation. Public peer comparables run roughly 8–18×.
+        FY26 ending ARR × public-SaaS multiple. Public peer comparables run roughly 8–18×.
       </div>
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 12 }}>
         {tiers.map(t => (

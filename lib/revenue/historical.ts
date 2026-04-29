@@ -100,6 +100,7 @@ function periodFromFigs(
   scale: number,    // 1.0 for quarter, 1/3 for month, 4 for annual… computed via summed Qs not scaled
   arr_yoy_growth: number | null,
   rule_of_40: number | null,
+  rule_of_40_non_gaap: number | null,
 ): PeriodResult {
   const total_revenue           = q.rev * scale * M;
   const self_serve_revenue      = q.ss * scale * M;
@@ -199,6 +200,7 @@ function periodFromFigs(
     ending_grr_ttm: q.grr,
     arr_yoy_growth,
     rule_of_40,
+    rule_of_40_non_gaap,
   };
 }
 
@@ -207,7 +209,7 @@ function periodFromFigs(
 const QLABEL = ["Q1 '25", "Q2 '25", "Q3 '25", "Q4 '25"];
 
 export const FY25_QUARTERLY: PeriodResult[] = QUARTERS.map((q, i) =>
-  periodFromFigs(QLABEL[i], -11 + i * 3, -9 + i * 3, q, 1, null, null),
+  periodFromFigs(QLABEL[i], -11 + i * 3, -9 + i * 3, q, 1, null, null, null),
 );
 
 // ---------- Monthly: 12 PeriodResults (each = quarter / 3, with snapshot interp) ----------
@@ -255,6 +257,7 @@ export const FY25_MONTHLY: PeriodResult[] = (() => {
         1 / 3,
         null,
         null,
+        null,
       ));
     }
   }
@@ -290,7 +293,6 @@ export const FY25_ANNUAL: PeriodResult = (() => {
   }
   // ARR YoY for FY25 vs Dec 24 day-0 ARR
   const arr_yoy = (Q4.ending_arr - ARR_START) / ARR_START;
-  // Rule of 40: ARR YoY + Non-GAAP OM (computed here for tooltip-display)
   const fy25_revenue_M = sum.rev;
   const sm_total_M  = sum.sm_cash + sum.sm_sbc + sum.sm_programs;
   const rd_total_M  = sum.rd_cash + sum.rd_sbc + sum.rd_tooling;
@@ -301,10 +303,11 @@ export const FY25_ANNUAL: PeriodResult = (() => {
   const opi_gaap_M  = gp_M - opex_M;
   const total_sbc_M = sum.sm_sbc + sum.rd_sbc + sum.ga_sbc + sum.cs_sbc_half;
   const opi_ng_M    = opi_gaap_M + total_sbc_M;
-  const opi_ng_pct  = opi_ng_M / fy25_revenue_M;
-  const rule_40     = arr_yoy + opi_ng_pct;
+  // Engine stores rule_of_40 in % (×100). Match its units so FY25/FY26/FY27 columns are comparable.
+  const rule_40_gaap     = (arr_yoy + opi_gaap_M / fy25_revenue_M) * 100;
+  const rule_40_non_gaap = (arr_yoy + opi_ng_M   / fy25_revenue_M) * 100;
 
-  return periodFromFigs('FY 2025', -11, 0, sum, 1, arr_yoy, rule_40);
+  return periodFromFigs('FY 2025', -11, 0, sum, 1, arr_yoy, rule_40_gaap, rule_40_non_gaap);
 })();
 
 // ---------- Convenience exports ----------
