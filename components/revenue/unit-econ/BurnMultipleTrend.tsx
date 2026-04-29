@@ -13,7 +13,8 @@ const FY25_LABELS = [
 
 export default function BurnMultipleTrend() {
   const { results, activeScenario } = useRevenue();
-  const monthly = results[activeScenario].monthly;
+  const r = results[activeScenario];
+  const monthly = r.monthly;
 
   // FY25 historical: burn = max(0, -GAAP op income) / net-new ARR (annualized).
   const histSeries = FY25_MONTHLY.map((p, i) => {
@@ -24,12 +25,20 @@ export default function BurnMultipleTrend() {
     return { label: FY25_LABELS[i], value, historical: true as const };
   });
 
-  // Burn multiple is undefined when net new ARR <= 0; treat 0 as "n/a" → null
-  const fcstSeries = monthly.map(m => ({
-    label: m.calendar_label,
-    value: m.kpis.burn_multiple > 0 ? m.kpis.burn_multiple : null,
-    historical: false as const,
-  }));
+  // Forecast: engine's m.kpis.burn_multiple is null at i=0 (needs prior month inside
+  // monthly[]). Compute Jan 26 manually using starting_arr (= FY25 Dec 25 ending) so
+  // the line is continuous across the FY25/FY26 boundary.
+  const fcstSeries = monthly.map((m, i) => {
+    let value: number | null;
+    if (i === 0) {
+      const netNew = m.total.arr - r.starting_arr;
+      const opLoss = Math.max(0, -m.costs.operating_income);
+      value = netNew > 0 ? opLoss / netNew : null;
+    } else {
+      value = m.kpis.burn_multiple > 0 ? m.kpis.burn_multiple : null;
+    }
+    return { label: m.calendar_label, value, historical: false as const };
+  });
 
   const series: Array<{ label: string; value: number | null; historical: boolean }> = [
     ...histSeries,

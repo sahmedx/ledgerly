@@ -41,7 +41,7 @@ export default function ArrWaterfall() {
     { label: 'Δ Self-Serve (net)',                          value: dSs,          kind: dSs >= 0 ? 'pos' : 'neg' },
     { label: 'New Sales-Led · named pipeline',              value: new_named,    kind: 'pos' },
     { label: 'New Sales-Led · capacity',                    value: new_capacity, kind: 'pos' },
-    { label: 'Graduation transfer (in)',                    value: grad_in,      kind: 'pos' },
+    { label: 'Self-serve → sales-led handoff',              value: grad_in,      kind: 'pos' },
     { label: 'Expansion',                                   value: expansion,    kind: 'pos' },
     { label: 'Contraction',                                 value: -contraction, kind: 'neg' },
     { label: 'Churn',                                       value: -churn,       kind: 'neg' },
