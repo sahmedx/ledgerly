@@ -11,7 +11,6 @@ export default function ValidationFooter() {
   const [open, setOpen] = useState(false);
   const r = results[activeScenario];
   const checks = r.validations;
-  const passing = checks.filter(c => c.passed).length;
   const hardFailing = checks.filter(c => !c.passed && !SOFT_CHECKS.has(c.id)).length;
   const allHardPass = hardFailing === 0;
 
@@ -31,7 +30,7 @@ export default function ValidationFooter() {
           display: 'inline-block',
         }} />
         <span style={{ fontSize: 13, fontWeight: 700 }}>
-          Model integrity · {passing}/{checks.length} checks passing
+          Model integrity
         </span>
         <span style={{ flex: 1 }} />
         <span style={{ fontSize: 11, color: 'var(--ink-3)' }}>
